@@ -32,9 +32,13 @@ RESET="$(tput sgr0)"
 #SHM_DIR=/dev/shm
 : ${REMOTE_WS="wss://kapteyn.westeurope.cloudapp.azure.com:8089"}
 LOGOPT=("--log-opt" "max-size=100m" "--log-opt" "max-file=50")
-
-# default. override in .env
 PORTS="2001,8090"
+
+hash docker 2>/dev/null || { echo "{RED}Docker is required for this script to work, proceeding to installation.{RESET}"; install_docker; }
+hash python3 2>/dev/null || { install_dependencies; }
+hash pip3 2>/dev/null || { install_dependencies; }
+hash git 2>/dev/null || { install_dependencies; }
+hash jq 2>/dev/null || { install_dependencies; }
 
 if [[ ! -f data/witness/config.ini ]]; then
     echo "config.ini not found. copying example (seed)";
@@ -55,6 +59,7 @@ help() {
     echo "Commands: "
     echo "    dlblocks - download the blockchain to speed up your first start"
     echo "    install_docker - install docker"
+    echo "    install_dependencies - install dependencies (Python3 / PIP3 / JQ)"
     echo "    install - pulls latest docker image from server (no compiling)"
     echo "    start - starts EFTG container"
     echo "    stop - stops EFTG container"
@@ -105,13 +110,25 @@ cleanup() {
 
 install_docker() {
     sudo apt update
-    sudo apt install curl git wget jq
+    sudo apt install curl git wget
     curl https://get.docker.com | sh
     if [ "${EUID}" -ne 0 ]; then 
         echo "Adding user $(whoami) to docker group"
         sudo usermod -aG docker "$(whoami)"
         echo "IMPORTANT: Please re-login (or close and re-connect SSH) for docker to function correctly"
     fi
+}
+
+install_dependencies() {
+	while true; do
+		echo "{RED}In order to run eftg-cli, the packages python3, python3-pip, git & jq needs to be installed${RESET}"
+		read -p "Do you wish to install these packages?" yn
+		case $yn in
+			[Yy]* ) sudo apt update; sudo apt install python3 python3-pip git jq; break;;
+			[Nn]* ) exit;;
+			* ) echo "Please answer yes or no.";;
+		esac
+	done
 }
 
 install() {
@@ -283,6 +300,9 @@ fi
 case $1 in
     install_docker)
         install_docker
+        ;;
+    install_dependencies)
+        install_dependencies
         ;;
     install)
         install "${@:2}"
