@@ -1,0 +1,8 @@
+debug.log
+info.log
+witness/logs
+witness/node
+witness/p2p
+witness/blockchain/block*
+wallet.json
+lock
