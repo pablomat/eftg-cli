@@ -172,7 +172,7 @@ remote_wallet() {
     if (( $# == 1 )); then
 	REMOTE_WS=$1
     fi
-    docker run -v "$DATADIR":/steem --rm -it steem cli_wallet -s "$REMOTE_WS"
+    docker run -v "${DATADIR}":/eftg --rm -it eftg_img /usr/local/eftgd-default/bin/cli_wallet -s "$REMOTE_WS" -w /eftg/wallet.json
 }
 
 logs() {
