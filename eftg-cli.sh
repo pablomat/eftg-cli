@@ -24,22 +24,17 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DATADIR="$DIR/data"
 DOCKER_NAME="eftg"
 
-#BOLD="$(tput bold)"
 RED="$(tput setaf 1)"
 GREEN="$(tput setaf 2)"
-#YELLOW="$(tput setaf 3)"
 BLUE="$(tput setaf 4)"
-#MAGENTA="$(tput setaf 5)"
-#CYAN="$(tput setaf 6)"
-#WHITE="$(tput setaf 7)"
 RESET="$(tput sgr0)"
 : ${DK_TAG="eftg/main:latest"}
 #SHM_DIR=/dev/shm
 : ${REMOTE_WS="wss://kapteyn.westeurope.cloudapp.azure.com:8089"}
-LOGOPT="--log-opt max-size=100m --log-opt max-file=50"
+LOGOPT=("--log-opt" "max-size=100m" "--log-opt" "max-file=50")
 
 # default. override in .env
-PORTS="2001 8090"
+PORTS="2001,8090"
 
 if [[ ! -f data/witness/config.ini ]]; then
     echo "config.ini not found. copying example (seed)";
@@ -58,18 +53,19 @@ help() {
     echo "Usage: $0 COMMAND [DATA]"
     echo
     echo "Commands: "
-    echo "    start - starts EFTG container"
     echo "    dlblocks - download the blockchain to speed up your first start"
+    echo "    install_docker - install docker"
+    echo "    install - pulls latest docker image from server (no compiling)"
+    echo "    start - starts EFTG container"
     echo "    stop - stops EFTG container"
     echo "    status - show status of EFTG container"
     echo "    restart - restarts EFTG container"
-    echo "    install_docker - install docker"
-    echo "    install - pulls latest docker image from server (no compiling)"
-    echo "    logs - show all logs inc. docker logs, and EFTG logs"
     echo "    wallet - open cli_wallet in the container"
     echo "    remote_wallet - open cli_wallet in the container connecting to a remote seed"
-    echo "    optimize - modify kernel parameters for better disk caching"
     echo "    enter - enter a bash session in the container"
+    echo "    logs - show all logs inc. docker logs, and EFTG logs"
+    echo "    cleanup - remove block_log & shared_memory file"
+    echo "    optimize - modify kernel parameters for better disk caching"
     echo
     exit
 }
@@ -89,17 +85,22 @@ dlblocks() {
     sudo rm -f "${DATADIR}/witness/blockchain/block_log"
     sudo rm -f "${DATADIR}/witness/blockchain/block_log.index"
     echo "Downloading EFTG block logs..."
-    #if [[ ! $(command -v xz) ]]; then
-    #   echo "XZ not found. Attempting to install..."
-    #   sudo apt update
-    #   sudo apt install -y xz-utils
-    #i
     wget --quiet "https://seed.blkcc.xyz/block_log" -O "${DATADIR}/witness/blockchain/block_log"
     wget --quiet "https://seed.blkcc.xyz/MD5SUM" -O "${DATADIR}/witness/blockchain/MD5SUM"
     echo "Verifying MD5 checksum... this may take a while..."
     cd "${DATADIR}/witness/blockchain" ; md5sum -c MD5SUM ; cd -
     echo "FINISHED. Blockchain downloaded and verified"
     echo "$ ./eftg-cli.sh replay"
+}
+
+cleanup() {
+    echo "Removing block log"
+    sudo rm -f "${DATADIR}/witness/blockchain/block_log"
+    sudo rm -f "${DATADIR}/witness/blockchain/block_log.index"
+    sudo rm -f "${DATADIR}/witness/blockchain/MD5SUM"
+    echo "Removing shared_memory"
+    sudo rm -f "${DATADIR}/witness/blockchain/shared_memory.bin"
+    sudo rm -f "${DATADIR}/witness/blockchain/shared_memory.meta"
 }
 
 install_docker() {
@@ -148,7 +149,7 @@ start() {
     if seed_exists; then
         docker start $DOCKER_NAME
     else
-        docker run "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT}" -d --name "${DOCKER_NAME}" -t eftg_img /usr/local/eftgd-default/bin/steemd -d /eftg/witness
+        docker run ${DPORTS[@]} -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img /usr/local/eftgd-default/bin/steemd -d /eftg/witness
     fi
 }
 
@@ -327,6 +328,9 @@ case $1 in
         ;;
     ver)
         ver
+        ;;
+    cleanup)
+        cleanup
         ;;
     *)
         echo "Invalid cmd"
