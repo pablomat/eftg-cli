@@ -46,6 +46,7 @@ help() {
     echo "Usage: $0 COMMAND [DATA]"
     echo
     echo "Commands: "
+    echo "    setup - initializes script with all requirements"
     echo "    dlblocks - download the blockchain to speed up your first start"
     echo "    install_docker - install docker"
     echo "    install_dependencies - install dependencies (Python3 / PIP3 / JQ)"
@@ -95,6 +96,10 @@ cleanup() {
     echo "Removing shared_memory"
     sudo rm -f "${DATADIR}/witness/blockchain/shared_memory.bin"
     sudo rm -f "${DATADIR}/witness/blockchain/shared_memory.meta"
+}
+
+setup() {
+    sudo ln -s "${DIR}/eftg-cli.sh" /usr/local/bin/eftg-cli
 }
 
 install_docker() {
@@ -319,6 +324,9 @@ case $1 in
         ;;
     stop)
         stop
+        ;;
+    setup)
+        setup
         ;;
     restart)
         stop
