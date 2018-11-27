@@ -20,7 +20,7 @@ set -o errexit # exit on errors
 set -o nounset # exit on use of uninitialized variable
 set -o errtrace # inherits trap on ERR in function and subshell
 
-DIR="$( cd "$( readlink "${BASH_SOURCE[0]}" | xargs dirname )" && pwd )"
+DIR="$( cd "$( realpath "${BASH_SOURCE[0]}" | xargs dirname )" && pwd )"
 DATADIR="$DIR/data"
 DOCKER_NAME="eftg"
 
