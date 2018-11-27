@@ -20,7 +20,7 @@ set -o errexit # exit on errors
 set -o nounset # exit on use of uninitialized variable
 set -o errtrace # inherits trap on ERR in function and subshell
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$( cd "$( readlink "${BASH_SOURCE[0]}" | xargs dirname )" && pwd )"
 DATADIR="$DIR/data"
 DOCKER_NAME="eftg"
 
@@ -99,7 +99,11 @@ cleanup() {
 }
 
 setup() {
-    sudo ln -s "${DIR}/eftg-cli.sh" /usr/local/bin/eftg-cli
+    [[ -f /usr/local/bin/eftg-cli.sh ]] && { sudo rm /usr/local/bin/eftg-cli.sh; }
+    [[ -f /etc/bash_completion.d/eftg-completion.bash ]] && { sudo rm /etc/bash_completion.d/eftg-completion.bash; }
+    sudo ln -s "${DIR}/eftg-cli.sh" /usr/local/bin/
+    sudo ln -s "${DIR}/scripts/eftg-completion.bash" /etc/bash_completion.d/
+    echo "IMPORTANT: Please re-login (or close and re-connect SSH) to finish setup"
 }
 
 install_docker() {
@@ -300,9 +304,9 @@ hash pip3 2>/dev/null || { echo "${RED}Python3-pip is required for this script t
 hash git 2>/dev/null || { echo "${RED}Git is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
 hash jq 2>/dev/null || { echo "${RED}jq is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
 
-if [[ ! -f data/witness/config.ini ]]; then
+if [[ ! -f "${DATADIR}/witness/config.ini" ]]; then
     echo "config.ini not found. copying example (seed)";
-    cp data/witness/config.ini.example data/witness/config.ini
+    cp "${DATADIR}/witness/config.ini.example" "${DATADIR}/witness/config.ini"
 fi
 
 if [ "$#" -lt 1 ]; then
