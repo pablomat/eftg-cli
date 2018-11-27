@@ -34,17 +34,6 @@ RESET="$(tput sgr0)"
 LOGOPT=("--log-opt" "max-size=100m" "--log-opt" "max-file=50")
 PORTS="2001,8090"
 
-hash docker 2>/dev/null || { echo "{RED}Docker is required for this script to work, proceeding to installation.{RESET}"; install_docker; }
-hash python3 2>/dev/null || { install_dependencies; }
-hash pip3 2>/dev/null || { install_dependencies; }
-hash git 2>/dev/null || { install_dependencies; }
-hash jq 2>/dev/null || { install_dependencies; }
-
-if [[ ! -f data/witness/config.ini ]]; then
-    echo "config.ini not found. copying example (seed)";
-    cp data/witness/config.ini.example data/witness/config.ini
-fi
-
 IFS=","
 DPORTS=()
 for i in $PORTS; do
@@ -86,7 +75,7 @@ dlblocks() {
     if [[ ! -d "${DATADIR}/blockchain" ]]; then
         mkdir "${DATADIR}/blockchain"
     fi
-    echo "Removing old block log"
+    echo "${RED}Removing old block log${RESET}"
     sudo rm -f "${DATADIR}/witness/blockchain/block_log"
     sudo rm -f "${DATADIR}/witness/blockchain/block_log.index"
     echo "Downloading EFTG block logs..."
@@ -94,7 +83,7 @@ dlblocks() {
     wget --quiet "https://seed.blkcc.xyz/MD5SUM" -O "${DATADIR}/witness/blockchain/MD5SUM"
     echo "Verifying MD5 checksum... this may take a while..."
     cd "${DATADIR}/witness/blockchain" ; md5sum -c MD5SUM ; cd -
-    echo "FINISHED. Blockchain downloaded and verified"
+    echo "${GREEN}FINISHED. Blockchain downloaded and verified${RESET}"
     echo "$ ./eftg-cli.sh replay"
 }
 
@@ -109,8 +98,15 @@ cleanup() {
 }
 
 install_docker() {
-    sudo apt update
-    sudo apt install curl git wget
+    while true; do
+        echo "${RED}The following dependencies will be installed: python3, python3-pip, curl, wget, git & jq${RESET}"
+	read -p "Do you wish to install these packages? (yes/no) " yn
+        case $yn in
+	    [Yy]* ) sudo apt update; sudo apt install python3 python3-pip curl wget git jq; break;;
+	    [Nn]* ) exit;;
+	    * ) echo "Please answer yes or no.";;
+	esac
+    done
     curl https://get.docker.com | sh
     if [ "${EUID}" -ne 0 ]; then 
         echo "Adding user $(whoami) to docker group"
@@ -120,15 +116,15 @@ install_docker() {
 }
 
 install_dependencies() {
-	while true; do
-		echo "{RED}In order to run eftg-cli, the packages python3, python3-pip, git & jq needs to be installed${RESET}"
-		read -p "Do you wish to install these packages?" yn
-		case $yn in
-			[Yy]* ) sudo apt update; sudo apt install python3 python3-pip git jq; break;;
-			[Nn]* ) exit;;
-			* ) echo "Please answer yes or no.";;
-		esac
-	done
+    while true; do
+        echo "${RED}In order to run eftg-cli, the packages python3, python3-pip, git & jq needs to be installed${RESET}"
+	read -p "Do you wish to install these packages? (yes/no) " yn
+        case $yn in
+	    [Yy]* ) sudo apt update; sudo apt install python3 python3-pip git jq; break;;
+	    [Nn]* ) exit;;
+	    * ) echo "Please answer yes or no.";;
+	esac
+    done
 }
 
 install() {
@@ -292,6 +288,17 @@ status() {
     fi
 
 }
+
+hash docker 2>/dev/null || { echo "${RED}Docker is required for this script to work, proceeding to installation.${RESET}"; install_docker; exit; }
+hash python3 2>/dev/null || { echo "${RED}Python3 is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
+hash pip3 2>/dev/null || { echo "${RED}Python3-pip is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
+hash git 2>/dev/null || { echo "${RED}Git is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
+hash jq 2>/dev/null || { echo "${RED}jq is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
+
+if [[ ! -f data/witness/config.ini ]]; then
+    echo "config.ini not found. copying example (seed)";
+    cp data/witness/config.ini.example data/witness/config.ini
+fi
 
 if [ "$#" -lt 1 ]; then
     help
