@@ -89,13 +89,36 @@ dlblocks() {
 }
 
 cleanup() {
-    echo "Removing block log"
-    sudo rm -f "${DATADIR}/witness/blockchain/block_log"
-    sudo rm -f "${DATADIR}/witness/blockchain/block_log.index"
-    sudo rm -f "${DATADIR}/witness/blockchain/MD5SUM"
-    echo "Removing shared_memory"
-    sudo rm -f "${DATADIR}/witness/blockchain/shared_memory.bin"
-    sudo rm -f "${DATADIR}/witness/blockchain/shared_memory.meta"
+    do_it() {
+        echo "Removing block log"
+        sudo rm -f "${DATADIR}/witness/blockchain/block_log"
+        sudo rm -f "${DATADIR}/witness/blockchain/block_log.index"
+        sudo rm -f "${DATADIR}/witness/blockchain/MD5SUM"
+        echo "Removing shared_memory"
+        sudo rm -f "${DATADIR}/witness/blockchain/shared_memory.bin"
+        sudo rm -f "${DATADIR}/witness/blockchain/shared_memory.meta"
+    }
+    if seed_running; then
+        while true; do
+            echo "${RED}In order to safely delete block_log & shared_memory the container needs to be stopped & removed${RESET}"
+            read -p "Do you wish to proceed? (yes/no) " yn
+            case $yn in
+                [Yy]* )
+                        stop
+                        do_it
+                        break;;
+                [Nn]* ) exit;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
+    else
+        if seed_exists; then
+            docker rm ${DOCKER_NAME}
+            do_it
+        else
+            do_it
+        fi
+    fi
 }
 
 setup() {
@@ -109,12 +132,12 @@ setup() {
 install_docker() {
     while true; do
         echo "${RED}The following dependencies will be installed: python3, python3-pip, curl, wget, git & jq${RESET}"
-	read -p "Do you wish to install these packages? (yes/no) " yn
+        read -p "Do you wish to install these packages? (yes/no) " yn
         case $yn in
-	    [Yy]* ) sudo apt update; sudo apt install python3 python3-pip curl wget git jq; break;;
-	    [Nn]* ) exit;;
-	    * ) echo "Please answer yes or no.";;
-	esac
+            [Yy]* ) sudo apt update; sudo apt install python3 python3-pip curl wget git jq; break;;
+            [Nn]* ) exit;;
+            * ) echo "Please answer yes or no.";;
+        esac
     done
     curl https://get.docker.com | sh
     if [ "${EUID}" -ne 0 ]; then 
@@ -127,12 +150,12 @@ install_docker() {
 install_dependencies() {
     while true; do
         echo "${RED}In order to run eftg-cli, the packages python3, python3-pip, git & jq needs to be installed${RESET}"
-	read -p "Do you wish to install these packages? (yes/no) " yn
+        read -p "Do you wish to install these packages? (yes/no) " yn
         case $yn in
-	    [Yy]* ) sudo apt update; sudo apt install python3 python3-pip git jq; break;;
-	    [Nn]* ) exit;;
-	    * ) echo "Please answer yes or no.";;
-	esac
+            [Yy]* ) sudo apt update; sudo apt install python3 python3-pip git jq; break;;
+            [Nn]* ) exit;;
+            * ) echo "Please answer yes or no.";;
+        esac
     done
 }
 
