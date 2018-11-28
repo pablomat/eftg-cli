@@ -26,6 +26,6 @@ install_dependencies() {
 install_dependencies
 git clone https://github.com/pablomat/eftg-cli.git
 cd eftg-cli
-./eftg-cli setup
+./eftg-cli.sh setup
 
 # vim: set filetype=sh ts=4 sw=4 tw=0 wrap et:
