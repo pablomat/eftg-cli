@@ -7,9 +7,7 @@ It's purpose is to simplify the deployment of `EFTG` nodes.
 Features:
 
  - Automatic docker installer
- - Easily update Steem (steemd, cli_wallet etc.) with binary images
  - Single command to download and install block_log from trusted EFTG servers
- - Easily adjust /dev/shm size
  - Automatically installs a working example configuration for seeds, which can easily be customized for witnesses and full nodes
  - Quick access to common actions such as start, stop, local wallet, remote wallet, and much more
 
