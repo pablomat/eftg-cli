@@ -9,7 +9,7 @@
 # Release v0.1
 #
 # Changelog :
-#               v0.1 : First release (2018/07/15) - Adapted from previous code.
+#               v0.1 : First release (2018/10/15) - Adapted from previous code.
 #               v0.2 : Second release
 #               v0.3 : Third release
 #
@@ -55,6 +55,7 @@ help() {
     echo "    stop - stops EFTG container"
     echo "    status - show status of EFTG container"
     echo "    restart - restarts EFTG container"
+    echo "    witness - witness node setup"
     echo "    wallet - open cli_wallet in the container"
     echo "    remote_wallet - open cli_wallet in the container connecting to a remote seed"
     echo "    enter - enter a bash session in the container"
@@ -86,6 +87,37 @@ dlblocks() {
     cd "${DATADIR}/witness/blockchain" ; md5sum -c MD5SUM ; cd -
     echo "${GREEN}FINISHED. Blockchain downloaded and verified${RESET}"
     echo "$ ./eftg-cli.sh replay"
+}
+
+getkeys() {
+    #local user="${1}"
+    #local pass="${2}"
+    read -p "Please enter your EFTG account name (without the @): " user
+    read -p "Please enter your EFTG master password: " pass
+    [[ -f "${DIR}/.credentials.json" ]] && { rm "${DIR}/.credentials.json"; }
+    ${DIR}/scripts/python/get_user_keys.py "${user}" "${pass}" > "${DIR}/.credentials.json" 
+}
+
+initwit() {
+    printf "%s\n" "A new configuration will be initialized for a witness node"
+    read -p "Are you sure you want to proceed? (yes/no) " yn
+    case ${yn} in [Yy]* ) [[ -f "${DATADIR}/witness/config.ini" ]] && { sudo rm "${DATADIR}/witness/config.ini"; } ;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
+    getkeys
+    [[ -f "${DATADIR}/witness/config.ini.example" ]] && { cp "${DATADIR}/witness/config.ini.example" "${DATADIR}/witness/config.ini"; } || { printf "%s\n" "Error. ${DATADIR}/witness/config.ini.example doesn't exist"; exit 1; }
+    [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
+    owner_privkey="$(/usr/bin/jq -r '.owner[] | select(.type == "private") | .value' "${DIR}/.credentials.json")"
+    /bin/sed -i -e s"/^#witness.*/witness = \"${witness}\"/"g -e s"/^#private-key.*/private-key = ${owner_privkey}/"g "${DATADIR}/witness/config.ini"
+    printf "%s\n" "Configuration updated."
+    read -p "Do you want to keep a copy of your credentials in ${DIR}/.credentials.json ? (yes/no) " yn
+    case ${yn} in [Yy]* ) continue ;; [Nn]* ) rm "${DIR}/.credentials.json" ;; * ) echo "Please answer yes or no.";; esac
+}
+
+updatewit() {
+    printf "%s\n" "The properties of the witness account will be updated and broadcasted to the network"
+    read -p "Are you sure you want to proceed? (yes/no) " yn
+    case ${yn} in [Yy]* ) continue ;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
+    getkeys
+    [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
 }
 
 cleanup() {
@@ -152,14 +184,14 @@ install_dependencies() {
         echo "${RED}In order to run eftg-cli, the packages python3, python3-pip, git & jq needs to be installed${RESET}"
         read -p "Do you wish to install these packages? (yes/no) " yn
         case $yn in
-            [Yy]* ) sudo apt update; sudo apt install python3 python3-pip git jq; break;;
+            [Yy]* ) sudo apt update; sudo apt install python3 python3-pip git jq; pip3 install -U beem==0.20.9; break;;
             [Nn]* ) exit;;
             * ) echo "Please answer yes or no.";;
         esac
     done
 }
 
-install() {
+installme() {
     if (( $# == 1 )); then
 	DK_TAG=$1
     fi
@@ -344,7 +376,10 @@ case $1 in
         install_dependencies
         ;;
     install)
-        install "${@:2}"
+        installme "${@:2}"
+        ;;
+    witness)
+        initwit
         ;;
     start)
         start
