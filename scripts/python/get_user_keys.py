@@ -41,7 +41,7 @@ for role in ['owner', 'active', 'posting', 'memo']:
     if key_auths_public[role] != blk_auths_public[role]:
         sys.exit("Password provided is not correct. Public " + role + " key " + key_auths_public[role] + " doesn't match the one in the EFTG blockchain " + blk_auths_public[role])
 
-data = {"owner":[{"type":"public","value":key_auths_public["owner"]},{"type":"private","value":key_auths_private["owner"]}],"active":[{"type":"public","value":key_auths_public["active"]},{"type":"private","value":key_auths_private["active"]}],"posting":[{"type":"public","value":key_auths_public["posting"]},{"type":"private","value":key_auths_private["posting"]}],"memo":[{"type":"public","value":key_auths_public["memo"]},{"type":"private","value":key_auths_private["memo"]}]}
+data = {"name":account['name'],"owner":[{"type":"public","value":key_auths_public["owner"]},{"type":"private","value":key_auths_private["owner"]}],"active":[{"type":"public","value":key_auths_public["active"]},{"type":"private","value":key_auths_private["active"]}],"posting":[{"type":"public","value":key_auths_public["posting"]},{"type":"private","value":key_auths_private["posting"]}],"memo":[{"type":"public","value":key_auths_public["memo"]},{"type":"private","value":key_auths_private["memo"]}]}
 
 print(json.dumps(data, indent=4))
 
