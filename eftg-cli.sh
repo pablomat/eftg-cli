@@ -168,6 +168,8 @@ setup() {
         echo "or using the full path located at /usr/local/bin/eftg-cli.sh"
         echo
     }
+    hash docker 2>/dev/null || { echo "${RED}Docker is required for this script to work, proceeding to installation.${RESET}"; install_docker; }
+
     if [[ -f /usr/local/bin/eftg-cli.sh && -f /etc/bash_completion.d/eftg-completion.bash ]]; then
         while true; do
             read -r -p "It looks like this setup was already executed, would you like to re-run it ? (yes/no) " yn
@@ -189,6 +191,7 @@ install_docker() {
         echo "Adding user $(whoami) to docker group"
         sudo usermod -aG docker "$(whoami)"
         echo "IMPORTANT: Please re-login (or close and re-connect SSH) for docker to function correctly"
+        echo
     fi
 }
 
@@ -388,12 +391,12 @@ status() {
 
 }
 
-hash docker 2>/dev/null || { echo "${RED}Docker is required for this script to work, proceeding to installation.${RESET}"; install_docker; exit; }
-hash python3 2>/dev/null || { echo "${RED}Python3 is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
-hash pip3 2>/dev/null || { echo "${RED}Python3-pip is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
-hash git 2>/dev/null || { echo "${RED}Git is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
-hash jq 2>/dev/null || { echo "${RED}jq is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
-hash beempy 2>/dev/null || { echo "${RED}Beem is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
+#hash docker 2>/dev/null || { echo "${RED}Docker is required for this script to work, proceeding to installation.${RESET}"; install_docker; exit; }
+#hash python3 2>/dev/null || { echo "${RED}Python3 is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
+#hash pip3 2>/dev/null || { echo "${RED}Python3-pip is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
+#hash git 2>/dev/null || { echo "${RED}Git is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
+#hash jq 2>/dev/null || { echo "${RED}jq is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
+#hash beempy 2>/dev/null || { echo "${RED}Beem is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
 
 if [[ ! -f "${DATADIR}/witness/config.ini" ]]; then
     echo "config.ini not found. copying example (seed)";
