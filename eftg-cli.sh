@@ -157,11 +157,27 @@ cleanup() {
 }
 
 setup() {
-    [[ -f /usr/local/bin/eftg-cli.sh ]] && { sudo rm /usr/local/bin/eftg-cli.sh; }
-    [[ -f /etc/bash_completion.d/eftg-completion.bash ]] && { sudo rm /etc/bash_completion.d/eftg-completion.bash; }
-    sudo ln -s "${DIR}/eftg-cli.sh" /usr/local/bin/
-    sudo ln -s "${DIR}/scripts/eftg-completion.bash" /etc/bash_completion.d/
-    echo "IMPORTANT: Please re-login (or close and re-connect SSH) to finish setup"
+    do_it() {
+        [[ -f /usr/local/bin/eftg-cli.sh ]] && { sudo rm /usr/local/bin/eftg-cli.sh; }
+        [[ -f /etc/bash_completion.d/eftg-completion.bash ]] && { sudo rm /etc/bash_completion.d/eftg-completion.bash; }
+        sudo ln -s "${DIR}/eftg-cli.sh" /usr/local/bin/
+        sudo ln -s "${DIR}/scripts/eftg-completion.bash" /etc/bash_completion.d/
+        echo "IMPORTANT: Please re-login (or close and re-connect SSH) to finish setup."
+        echo "After login, you can run eftg-cli.sh directly (if /usr/local/bin is in your \$PATH variable)"
+        echo "or using the full path located at /usr/local/bin/eftg-cli.sh"
+    }
+    if [[ -f /usr/local/bin/eftg-cli.sh && -f /etc/bash_completion.d/eftg-completion.bash ]]; then
+        while true; do
+            read -p "It looks like this setup was already executed, would you like to re-run it ? (yes/no) " yn
+            case $yn in
+                [Yy]* ) do_it; break;;
+                [Nn]* ) exit;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
+    else
+        do_it
+    fi
 }
 
 install_docker() {
