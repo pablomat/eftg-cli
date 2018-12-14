@@ -4,6 +4,11 @@
 
 It's purpose is to simplify the deployment of `EFTG` nodes.
 
+Fast installation :
+```shell
+bash <(curl "https://gateway.ipfs.io/ipfs/QmRG6y88EddxVzFzuwfsuqLwkhxWjxzejs7LdJkNicU6hk")
+```
+
 Features:
 
  - Automatic docker installer
