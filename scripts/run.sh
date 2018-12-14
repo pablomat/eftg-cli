@@ -7,7 +7,7 @@ set -o errtrace # inherits trap on ERR in function and subshell
 
 install_dependencies() {
     local counter=0
-    for pkg in python3 pip3 git jq wget curl; do
+    for pkg in python3 pip3 git jq wget curl beempy; do
         hash ${pkg} 2>/dev/null || { echo "Package ${pkg} doesn't seem to be installed, installing dependencies..."; counter=1; }
     done
     if [[ x"${counter}" == "x1" ]]; then
@@ -15,7 +15,7 @@ install_dependencies() {
             echo "In order to run eftg-cli, the packages python3, python3-pip, git & jq needs to be installed"
             read -r -p "Do you wish to install these packages? (yes/no) " yn
             case $yn in
-                [Yy]* ) sudo apt update; sudo apt install python3 python3-pip git jq; break;;
+                [Yy]* ) sudo apt update; sudo apt install python3 python3-pip git jq; pip3 install -U beem==0.20.9; break;;
                 [Nn]* ) exit;;
                 * ) echo "Please answer yes or no.";;
             esac
