@@ -162,9 +162,11 @@ setup() {
         [[ -f /etc/bash_completion.d/eftg-completion.bash ]] && { sudo rm /etc/bash_completion.d/eftg-completion.bash; }
         sudo ln -s "${DIR}/eftg-cli.sh" /usr/local/bin/
         sudo ln -s "${DIR}/scripts/eftg-completion.bash" /etc/bash_completion.d/
-        echo "IMPORTANT: Please re-login (or close and re-connect SSH) to finish setup."
+        echo
+        echo "${RED}IMPORTANT${RESET}: Please re-login (or close and re-connect SSH) to finish setup."
         echo "After login, you can run eftg-cli.sh directly (if /usr/local/bin is in your \$PATH variable)"
         echo "or using the full path located at /usr/local/bin/eftg-cli.sh"
+        echo
     }
     if [[ -f /usr/local/bin/eftg-cli.sh && -f /etc/bash_completion.d/eftg-completion.bash ]]; then
         while true; do
