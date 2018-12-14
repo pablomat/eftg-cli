@@ -193,6 +193,7 @@ install_docker() {
 }
 
 install_dependencies() {
+    set +u
     count=()
     for pkg in python3 pip3 git jq wget curl beempy; do
         hash ${pkg} 2>/dev/null || { count=("${count[@]}" "${pkg}"); }
@@ -217,6 +218,7 @@ install_dependencies() {
             esac
         fi
     done
+    set -u
 }
 
 installme() {

@@ -6,21 +6,33 @@ set -o nounset # exit on use of uninitialized variable
 set -o errtrace # inherits trap on ERR in function and subshell
 
 install_dependencies() {
-    local counter=0
+    set +u
+    local count=()
+
     for pkg in python3 pip3 git jq wget curl beempy; do
-        hash ${pkg} 2>/dev/null || { echo "Package ${pkg} doesn't seem to be installed, installing dependencies..."; counter=1; }
+        hash ${pkg} 2>/dev/null || { count=("${count[@]}" "${pkg}"); }
     done
-    if [[ x"${counter}" == "x1" ]]; then
-        while true; do
-            echo "In order to run eftg-cli, the packages python3, python3-pip, git & jq needs to be installed"
+
+    while true; do
+        if [[ ${#count[@]} -ne 0 ]]; then
+            echo "${RED}In order to run eftg-cli, the following packages need to be installed : ${count[*]} ${RESET}"
             read -r -p "Do you wish to install these packages? (yes/no) " yn
             case $yn in
-                [Yy]* ) sudo apt update; sudo apt install -y python3 python3-pip git jq; pip3 install -U beem==0.20.9; break;;
+                [Yy]* )
+                        if [[ x"${count[*]}" == "xbeempy" ]]; then
+                            pip3 install -U beem==0.20.9
+                        else
+                            sudo apt update
+                            sudo apt install "${count[@]}"
+                            pip3 install -U beem==0.20.9
+                        fi
+                        break;;
                 [Nn]* ) exit;;
                 * ) echo "Please answer yes or no.";;
             esac
-        done
-    fi
+        fi
+    done
+    set -u
 }
 
 install_dependencies
