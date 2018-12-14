@@ -15,7 +15,7 @@ install_dependencies() {
             echo "In order to run eftg-cli, the packages python3, python3-pip, git & jq needs to be installed"
             read -r -p "Do you wish to install these packages? (yes/no) " yn
             case $yn in
-                [Yy]* ) sudo apt update; sudo apt install python3 python3-pip git jq; pip3 install -U beem==0.20.9; break;;
+                [Yy]* ) sudo apt update; sudo apt install -y python3 python3-pip git jq; pip3 install -U beem==0.20.9; break;;
                 [Nn]* ) exit;;
                 * ) echo "Please answer yes or no.";;
             esac
