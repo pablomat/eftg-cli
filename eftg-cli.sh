@@ -90,8 +90,6 @@ dlblocks() {
 }
 
 getkeys() {
-    #local user="${1}"
-    #local pass="${2}"
     read -p "Please enter your EFTG account name (without the @): " user
     read -p "Please enter your EFTG master password: " pass
     [[ -f "${DIR}/.credentials.json" ]] && { rm "${DIR}/.credentials.json"; }
@@ -105,6 +103,7 @@ initwit() {
     getkeys
     [[ -f "${DATADIR}/witness/config.ini.example" ]] && { cp "${DATADIR}/witness/config.ini.example" "${DATADIR}/witness/config.ini"; } || { printf "%s\n" "Error. ${DATADIR}/witness/config.ini.example doesn't exist"; exit 1; }
     [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
+    witness="$(/usr/bin/jq -r '.name' "${DIR}/.credentials.json")"
     owner_privkey="$(/usr/bin/jq -r '.owner[] | select(.type == "private") | .value' "${DIR}/.credentials.json")"
     /bin/sed -i -e s"/^#witness.*/witness = \"${witness}\"/"g -e s"/^#private-key.*/private-key = ${owner_privkey}/"g "${DATADIR}/witness/config.ini"
     printf "%s\n" "Configuration updated."
@@ -118,6 +117,10 @@ updatewit() {
     case ${yn} in [Yy]* ) continue ;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
     getkeys
     [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
+    user="$(/usr/bin/jq -r '.name' "${DIR}/.credentials.json")"
+    owner_pubkey="$(/usr/bin/jq -r '.owner[] | select(.type == "public") | .value' "${DIR}/.credentials.json")"
+    active_privkey="$(/usr/bin/jq -r '.active[] | select(.type == "private") | .value' "${DIR}/.credentials.json")"
+    ${DIR}/scripts/python/update_witness.py update "${user}" "${active_privkey}" --publicownerkey "${owner_pubkey}" --blocksize 131072 --url "https://eftg.blkcc.xyz/@${user}" --creationfee "0.100 EFTG" --interestrate 0
 }
 
 cleanup() {
@@ -378,8 +381,11 @@ case $1 in
     install)
         installme "${@:2}"
         ;;
-    witness)
+    witness_setup)
         initwit
+        ;;
+    witness_update)
+        updatewit
         ;;
     start)
         start
