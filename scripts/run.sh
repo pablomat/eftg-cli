@@ -29,23 +29,23 @@ install_dependencies() {
 	fi
     done
 
-    while true; do
-        if [[ ${#count[@]} -ne 0 ]]; then
-            echo "${RED}In order to run eftg-cli, the following packages need to be installed : ${count[*]} ${RESET}"
+    if [[ ${#count[@]} -ne 0 ]]; then
+        echo "${RED}In order to run eftg-cli, the following packages need to be installed : ${count[*]} ${RESET}"
+        while true; do
             read -r -p "Do you wish to install these packages? (yes/no) " yn
             case $yn in
                 [Yy]* )
-			sudo apt update;
-		        sudo apt install "${count[@]}";
-		        if ! hash beempy 2>/dev/null; then { pip3 install -U beem==0.20.9; } fi;
+                        sudo apt update;
+                        sudo apt install "${count[@]}";
+                        if ! pip3 show beem &>/dev/null; then { pip3 install -U beem==0.20.9; } fi;
                         break;;
                 [Nn]* ) exit;;
                 * ) echo "Please answer yes or no.";;
             esac
+        done
 	else
-	    if ! hash beempy 2>/dev/null; then { pip3 install -U beem==0.20.9; } else { break; } fi
-        fi
-    done
+	    if ! pip3 show beem &>/dev/null; then { pip3 install -U beem==0.20.9; } fi
+    fi
     set -u
 }
 
