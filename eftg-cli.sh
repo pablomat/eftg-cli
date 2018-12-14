@@ -194,9 +194,16 @@ install_docker() {
 
 install_dependencies() {
     set +u
-    count=()
-    for pkg in python3 pip3 git jq wget curl beempy; do
-        hash ${pkg} 2>/dev/null || { count=("${count[@]}" "${pkg}"); }
+    local count=()
+
+    for pkg in build-essential libssl-dev python-dev python3 pip3 git jq wget curl; do
+        if ! hash ${pkg} 2>/dev/null; then
+                if [[ "${pkg}" == "pip3" ]]; then
+                        count=("${count[@]}" "python3-pip")
+                else
+                        count=("${count[@]}" "${pkg}")
+                fi
+        fi
     done
 
     while true; do
@@ -204,18 +211,16 @@ install_dependencies() {
             echo "${RED}In order to run eftg-cli, the following packages need to be installed : ${count[*]} ${RESET}"
             read -r -p "Do you wish to install these packages? (yes/no) " yn
             case $yn in
-                [Yy]* ) 
-                        if [[ x"${count[*]}" == "xbeempy" ]]; then
-                            pip3 install -U beem==0.20.9
-                        else
-                            sudo apt update
-                            sudo apt install "${count[@]}"
-                            pip3 install -U beem==0.20.9
-                        fi
-                        break;;                       
+                [Yy]* )
+                        sudo apt update
+                        sudo apt install "${count[@]}"
+                        if ! hash beempy 2>/dev/null; then { pip3 install -U beem==0.20.9; } fi
+                        break;;
                 [Nn]* ) exit;;
                 * ) echo "Please answer yes or no.";;
             esac
+        else
+            if ! hash beempy 2>/dev/null; then { pip3 install -U beem==0.20.9; } fi
         fi
     done
     set -u
