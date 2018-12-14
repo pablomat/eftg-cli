@@ -24,8 +24,17 @@ install_dependencies() {
 }
 
 install_dependencies
-git clone https://github.com/pablomat/eftg-cli.git
-cd eftg-cli
+PD="${PWD}"
+if [[ -d "${PD}/eftg-cli" ]]; then
+    if ! cd "${PD}/eftg-cli"; then { echo "Critical error"; exit 1; } fi
+    if ! /usr/bin/git checkout -q master; then { echo "Critical error"; exit 1; } fi
+    if ! /usr/bin/git pull -q; then { echo "Critical error"; exit 1; } fi
+    hash="$(/usr/bin/git rev-list --parents HEAD | /usr/bin/tail -1)"
+    if [[ x"${hash}" != "x9c035091ce1249666ec08555a122b96414e679b8" ]]; then { echo "Critical error"; exit 1; } fi
+else
+	if ! /usr/bin/git clone https://github.com/pablomat/eftg-cli.git; then { echo "Critical error"; exit 1; } fi
+fi
+if ! cd "${PD}/eftg-cli"; then { echo "Critical error"; exit 1; } fi
 ./eftg-cli.sh setup
 
 # vim: set filetype=sh ts=4 sw=4 tw=0 wrap et:
