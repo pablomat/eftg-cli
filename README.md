@@ -6,7 +6,7 @@ It's purpose is to simplify the deployment of `EFTG` nodes.
 
 Fast installation :
 ```shell
-bash <(curl "https://gateway.ipfs.io/ipfs/QmQf2ZwNQMiX8JThVvSB1XzDbKTvKVESDJxM5FVp63QKRe")
+bash <(curl "https://gateway.ipfs.io/ipfs/QmYeQMn5pQWeyuaPyHDnX7CRtNwmNcK6wACBeChbmpWxTF")
 ```
 
 Features:
