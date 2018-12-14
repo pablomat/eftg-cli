@@ -10,27 +10,37 @@ install_dependencies() {
     local count=()
 
     for pkg in build-essential libssl-dev python-dev python3 pip3 git jq wget curl; do
-	if ! hash ${pkg} 2>/dev/null; then
-		if [[ "${pkg}" == "pip3" ]]; then
-			count=("${count[@]}" 'python3-pip')
-		else
-			if [[ "${pkg}" == "build-essential" ]]; then
-				if ! /usr/bin/dpkg -s build-essential &>/dev/null; then count=("${count[@]}" 'build-essential'); fi
-				if [[ "${pkg}" == "libssl-dev" ]]; then
-					if ! /usr/bin/dpkg -s libssl-dev &>/dev/null; then count=("${count[@]}" 'libssl-dev'); fi
-					if [[ "${pkg}" == "python-dev" ]]; then
-						if ! /usr/bin/dpkg -s python-dev &>/dev/null; then count=("${count[@]}" 'python-dev'); fi
-					else
-						count=("${count[@]}" "${pkg}")
-					fi
-				fi
-			fi
-		fi		
+	if [[ "${pkg}" == "build-essential" ]]; then
+		if ! /usr/bin/dpkg -s build-essential &>/dev/null; then count=("${count[@]}" 'build-essential'); fi
+	fi
+	if [[ "${pkg}" == "libssl-dev" ]]; then
+		if ! /usr/bin/dpkg -s libssl-dev &>/dev/null; then count=("${count[@]}" 'libssl-dev'); fi
+	fi
+	if [[ "${pkg}" == "python-dev" ]]; then
+		if ! /usr/bin/dpkg -s python-dev &>/dev/null; then count=("${count[@]}" 'python-dev'); fi
+	fi
+	if [[ "${pkg}" == "python3" ]]; then
+		if ! hash "${pkg}" 2>/dev/null; then { count=("${count[@]}" "${pkg}"); } fi
+	fi
+	if [[ "${pkg}" == "pip3" ]]; then
+		if ! hash "${pkg}" 2>/dev/null; then { count=("${count[@]}" 'python3-pip'); } fi
+	fi
+	if [[ "${pkg}" == "git" ]]; then
+		if ! hash "${pkg}" 2>/dev/null; then { count=("${count[@]}" "${pkg}"); } fi
+	fi
+	if [[ "${pkg}" == "jq" ]]; then
+		if ! hash "${pkg}" 2>/dev/null; then { count=("${count[@]}" "${pkg}"); } fi
+	fi
+	if [[ "${pkg}" == "wget" ]]; then
+		if ! hash "${pkg}" 2>/dev/null; then { count=("${count[@]}" "${pkg}"); } fi
+	fi
+	if [[ "${pkg}" == "curl" ]]; then
+		if ! hash "${pkg}" 2>/dev/null; then { count=("${count[@]}" "${pkg}"); } fi
 	fi
     done
 
     if [[ ${#count[@]} -ne 0 ]]; then
-        echo "${RED}In order to run eftg-cli, the following packages need to be installed : ${count[*]} ${RESET}"
+        echo "In order to run eftg-cli, the following packages need to be installed : ${count[*]}"
         while true; do
             read -r -p "Do you wish to install these packages? (yes/no) " yn
             case $yn in
