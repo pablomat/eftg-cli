@@ -361,6 +361,7 @@ hash python3 2>/dev/null || { echo "${RED}Python3 is required for this script to
 hash pip3 2>/dev/null || { echo "${RED}Python3-pip is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
 hash git 2>/dev/null || { echo "${RED}Git is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
 hash jq 2>/dev/null || { echo "${RED}jq is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
+hash beempy 2>/dev/null || { echo "${RED}Beem is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
 
 if [[ ! -f "${DATADIR}/witness/config.ini" ]]; then
     echo "config.ini not found. copying example (seed)";
