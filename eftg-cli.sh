@@ -90,37 +90,37 @@ dlblocks() {
 }
 
 getkeys() {
-    read -p "Please enter your EFTG account name (without the @): " user
-    read -p "Please enter your EFTG master password: " pass
+    read -r -p "Please enter your EFTG account name (without the @): " user
+    read -r -p "Please enter your EFTG master password: " pass
     [[ -f "${DIR}/.credentials.json" ]] && { rm "${DIR}/.credentials.json"; }
-    ${DIR}/scripts/python/get_user_keys.py "${user}" "${pass}" > "${DIR}/.credentials.json" 
+    "${DIR}/scripts/python/get_user_keys.py" "${user}" "${pass}" > "${DIR}/.credentials.json" 
 }
 
 initwit() {
     printf "%s\n" "A new configuration will be initialized for a witness node"
-    read -p "Are you sure you want to proceed? (yes/no) " yn
+    read -r -p "Are you sure you want to proceed? (yes/no) " yn
     case ${yn} in [Yy]* ) [[ -f "${DATADIR}/witness/config.ini" ]] && { sudo rm "${DATADIR}/witness/config.ini"; } ;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
     getkeys
-    [[ -f "${DATADIR}/witness/config.ini.example" ]] && { cp "${DATADIR}/witness/config.ini.example" "${DATADIR}/witness/config.ini"; } || { printf "%s\n" "Error. ${DATADIR}/witness/config.ini.example doesn't exist"; exit 1; }
+    if [[ -f "${DATADIR}/witness/config.ini.example" ]]; then { cp "${DATADIR}/witness/config.ini.example" "${DATADIR}/witness/config.ini"; } else { printf "%s\n" "Error. ${DATADIR}/witness/config.ini.example doesn't exist"; exit 1; } fi
     [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
     witness="$(/usr/bin/jq -r '.name' "${DIR}/.credentials.json")"
     owner_privkey="$(/usr/bin/jq -r '.owner[] | select(.type == "private") | .value' "${DIR}/.credentials.json")"
     /bin/sed -i -e s"/^#witness.*/witness = \"${witness}\"/"g -e s"/^#private-key.*/private-key = ${owner_privkey}/"g "${DATADIR}/witness/config.ini"
     printf "%s\n" "Configuration updated."
-    read -p "Do you want to keep a copy of your credentials in ${DIR}/.credentials.json ? (yes/no) " yn
-    case ${yn} in [Yy]* ) continue ;; [Nn]* ) rm "${DIR}/.credentials.json" ;; * ) echo "Please answer yes or no.";; esac
+    read -r -p "Do you want to keep a copy of your credentials in ${DIR}/.credentials.json ? (yes/no) " yn
+    case ${yn} in [Yy]* ) return;; [Nn]* ) rm "${DIR}/.credentials.json" ;; * ) echo "Please answer yes or no.";; esac
 }
 
 updatewit() {
     printf "%s\n" "The properties of the witness account will be updated and broadcasted to the network"
-    read -p "Are you sure you want to proceed? (yes/no) " yn
-    case ${yn} in [Yy]* ) continue ;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
+    read -r -p "Are you sure you want to proceed? (yes/no) " yn
+    case ${yn} in [Yy]* ) return;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
     getkeys
     [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
     user="$(/usr/bin/jq -r '.name' "${DIR}/.credentials.json")"
     owner_pubkey="$(/usr/bin/jq -r '.owner[] | select(.type == "public") | .value' "${DIR}/.credentials.json")"
     active_privkey="$(/usr/bin/jq -r '.active[] | select(.type == "private") | .value' "${DIR}/.credentials.json")"
-    ${DIR}/scripts/python/update_witness.py update "${user}" "${active_privkey}" --publicownerkey "${owner_pubkey}" --blocksize 131072 --url "https://eftg.blkcc.xyz/@${user}" --creationfee "0.100 EFTG" --interestrate 0
+    "${DIR}/scripts/python/update_witness.py" update "${user}" "${active_privkey}" --publicownerkey "${owner_pubkey}" --blocksize 131072 --url "https://eftg.blkcc.xyz/@${user}" --creationfee "0.100 EFTG" --interestrate 0
 }
 
 cleanup() {
@@ -136,7 +136,7 @@ cleanup() {
     if seed_running; then
         while true; do
             echo "${RED}In order to safely delete block_log & shared_memory the container needs to be stopped & removed${RESET}"
-            read -p "Do you wish to proceed? (yes/no) " yn
+            read -r -p "Do you wish to proceed? (yes/no) " yn
             case $yn in
                 [Yy]* )
                         stop
@@ -170,7 +170,7 @@ setup() {
     }
     if [[ -f /usr/local/bin/eftg-cli.sh && -f /etc/bash_completion.d/eftg-completion.bash ]]; then
         while true; do
-            read -p "It looks like this setup was already executed, would you like to re-run it ? (yes/no) " yn
+            read -r -p "It looks like this setup was already executed, would you like to re-run it ? (yes/no) " yn
             case $yn in
                 [Yy]* ) do_it; break;;
                 [Nn]* ) exit;;
@@ -183,15 +183,7 @@ setup() {
 }
 
 install_docker() {
-    while true; do
-        echo "${RED}The following dependencies will be installed: python3, python3-pip, curl, wget, git & jq${RESET}"
-        read -p "Do you wish to install these packages? (yes/no) " yn
-        case $yn in
-            [Yy]* ) sudo apt update; sudo apt install python3 python3-pip curl wget git jq; break;;
-            [Nn]* ) exit;;
-            * ) echo "Please answer yes or no.";;
-        esac
-    done
+    install_dependencies
     curl https://get.docker.com | sh
     if [ "${EUID}" -ne 0 ]; then 
         echo "Adding user $(whoami) to docker group"
@@ -201,14 +193,29 @@ install_docker() {
 }
 
 install_dependencies() {
+    count=()
+    for pkg in python3 pip3 git jq wget curl beempy; do
+        hash ${pkg} 2>/dev/null || { count=("${count[@]}" "${pkg}"); }
+    done
+
     while true; do
-        echo "${RED}In order to run eftg-cli, the packages python3, python3-pip, git & jq needs to be installed${RESET}"
-        read -p "Do you wish to install these packages? (yes/no) " yn
-        case $yn in
-            [Yy]* ) sudo apt update; sudo apt install python3 python3-pip git jq; pip3 install -U beem==0.20.9; break;;
-            [Nn]* ) exit;;
-            * ) echo "Please answer yes or no.";;
-        esac
+        if [[ ${#count[@]} -ne 0 ]]; then
+            echo "${RED}In order to run eftg-cli, the following packages need to be installed : ${count[*]} ${RESET}"
+            read -r -p "Do you wish to install these packages? (yes/no) " yn
+            case $yn in
+                [Yy]* ) 
+                        if [[ x"${count[*]}" == "xbeempy" ]]; then
+                            pip3 install -U beem==0.20.9
+                        else
+                            sudo apt update
+                            sudo apt install "${count[@]}"
+                            pip3 install -U beem==0.20.9
+                        fi
+                        break;;                       
+                [Nn]* ) exit;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        fi
     done
 }
 
@@ -229,7 +236,7 @@ seed_exists() {
     if [[ $seedcount -eq 2 ]]; then
         return 0
     else
-        return -1
+        return 1
     fi
 }
 
@@ -238,7 +245,7 @@ seed_running() {
     if [[ $seedcount -eq 2 ]]; then
         return 0
     else
-        return -1
+        return 1
     fi
 }
 
@@ -280,79 +287,79 @@ logs() {
     #tail -n 30 $DATADIR/{info.log,debug.log}
 }
 
-pclogs() {
-    if [[ ! $(command -v jq) ]]; then
-        echo "${RED}jq not found. Attempting to install...${RESET}"
-        sleep 3
-        sudo apt update
-        sudo apt install -y jq
-    fi
-    local LOG_PATH=$(docker inspect $DOCKER_NAME | jq -r .[0].LogPath)
-    local pipe=/tmp/dkpipepc.fifo
-    trap "rm -f $pipe" EXIT
-    if [[ ! -p $pipe ]]; then
-        mkfifo $pipe
-    fi
-    # the sleep is a dirty hack to keep the pipe open
+#pclogs() {
+#    if [[ ! $(command -v jq) ]]; then
+#        echo "${RED}jq not found. Attempting to install...${RESET}"
+#        sleep 3
+#        sudo apt update
+#        sudo apt install -y jq
+#    fi
+#    local LOG_PATH=$(docker inspect $DOCKER_NAME | jq -r .[0].LogPath)
+#    local pipe=/tmp/dkpipepc.fifo
+#    trap "rm -f $pipe" EXIT
+#    if [[ ! -p $pipe ]]; then
+#        mkfifo $pipe
+#    fi
+#    # the sleep is a dirty hack to keep the pipe open
+#
+#    sleep 10000 < $pipe &
+#    tail -n 5000 -f "$LOG_PATH" &> $pipe &
+#    while true
+#    do
+#        if read -r line <$pipe; then
+#            # first grep the data for "M free" to avoid
+#            # needlessly processing the data
+#            L=$(grep --colour=never "M free" <<< "$line")
+#            if [[ $? -ne 0 ]]; then
+#                continue
+#            fi
+#            # then, parse the line and print the time + log
+#            L=$(jq -r ".time +\" \" + .log" <<< "$L")
+#            # then, remove excessive \r's causing multiple line breaks
+#            L=$(sed -e "s/\r//" <<< "$L")
+#            # now remove the decimal time to make the logs cleaner
+#            L=$(sed -e 's/\..*Z//' <<< "$L")
+#            # and finally, strip off any duplicate new line characters
+#            L=$(tr -s "\n" <<< "$L")
+#            printf '%s\r\n' "$L"
+#        fi
+#    done
+#}
 
-    sleep 10000 < $pipe &
-    tail -n 5000 -f "$LOG_PATH" &> $pipe &
-    while true
-    do
-        if read -r line <$pipe; then
-            # first grep the data for "M free" to avoid
-            # needlessly processing the data
-            L=$(grep --colour=never "M free" <<< "$line")
-            if [[ $? -ne 0 ]]; then
-                continue
-            fi
-            # then, parse the line and print the time + log
-            L=$(jq -r ".time +\" \" + .log" <<< "$L")
-            # then, remove excessive \r's causing multiple line breaks
-            L=$(sed -e "s/\r//" <<< "$L")
-            # now remove the decimal time to make the logs cleaner
-            L=$(sed -e 's/\..*Z//' <<< "$L")
-            # and finally, strip off any duplicate new line characters
-            L=$(tr -s "\n" <<< "$L")
-            printf '%s\r\n' "$L"
-        fi
-    done
-}
-
-tslogs() {
-    if [[ ! $(command -v jq) ]]; then
-        echo "${RED}jq not found. Attempting to install...${RESET}"
-        sleep 3
-        sudo apt update
-        sudo apt install -y jq
-    fi
-    local LOG_PATH=$(docker inspect $DOCKER_NAME | jq -r .[0].LogPath)
-    local pipe=/tmp/dkpipe.fifo
-    trap "rm -f $pipe" EXIT
-    if [[ ! -p $pipe ]]; then
-        mkfifo $pipe
-    fi
-    # the sleep is a dirty hack to keep the pipe open
-
-    sleep 10000 < $pipe &
-    tail -n 100 -f "$LOG_PATH" &> $pipe &
-    while true
-    do
-        if read -r line <$pipe; then
-            # first, parse the line and print the time + log
-            L=$(jq -r ".time +\" \" + .log" <<<"$line")
-            # then, remove excessive \r's causing multiple line breaks
-            L=$(sed -e "s/\r//" <<< "$L")
-            # now remove the decimal time to make the logs cleaner
-            L=$(sed -e 's/\..*Z//' <<< "$L")
-            # remove the steem ms time because most people don't care
-            L=$(sed -e 's/[0-9]\+ms //' <<< "$L")
-            # and finally, strip off any duplicate new line characters
-            L=$(tr -s "\n" <<< "$L")
-            printf '%s\r\n' "$L"
-        fi
-    done
-}
+#tslogs() {
+#    if [[ ! $(command -v jq) ]]; then
+#        echo "${RED}jq not found. Attempting to install...${RESET}"
+#        sleep 3
+#        sudo apt update
+#        sudo apt install -y jq
+#    fi
+#    local LOG_PATH=$(docker inspect $DOCKER_NAME | jq -r .[0].LogPath)
+#    local pipe=/tmp/dkpipe.fifo
+#    trap "rm -f $pipe" EXIT
+#    if [[ ! -p $pipe ]]; then
+#        mkfifo $pipe
+#    fi
+#    # the sleep is a dirty hack to keep the pipe open
+#
+#    sleep 10000 < $pipe &
+#    tail -n 100 -f "$LOG_PATH" &> $pipe &
+#    while true
+#    do
+#        if read -r line <$pipe; then
+#            # first, parse the line and print the time + log
+#            L=$(jq -r ".time +\" \" + .log" <<<"$line")
+#            # then, remove excessive \r's causing multiple line breaks
+#            L=$(sed -e "s/\r//" <<< "$L")
+#            # now remove the decimal time to make the logs cleaner
+#            L=$(sed -e 's/\..*Z//' <<< "$L")
+#            # remove the steem ms time because most people don't care
+#            L=$(sed -e 's/[0-9]\+ms //' <<< "$L")
+#            # and finally, strip off any duplicate new line characters
+#            L=$(tr -s "\n" <<< "$L")
+#            printf '%s\r\n' "$L"
+#        fi
+#    done
+#}
 
 status() {
     
