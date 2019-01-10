@@ -4,7 +4,7 @@
 
 Its purpose is to simplify the deployment of `EFTG` nodes.
 
-Fast installation :
+Fast installation:
 ```shell
 bash <(curl "https://gateway.ipfs.io/ipfs/QmYeQMn5pQWeyuaPyHDnX7CRtNwmNcK6wACBeChbmpWxTF")
 ```
@@ -15,6 +15,27 @@ Features:
  - Single command to download and install block_log from trusted EFTG servers
  - Automatically installs a working example configuration for seeds, which can easily be customized for witnesses and full nodes
  - Quick access to common actions such as start, stop, local wallet, remote wallet, and much more
+
+```shell
+Usage: /usr/local/bin/eftg-cli.sh COMMAND [DATA]
+
+Commands: 
+    setup - initializes script with all requirements
+    install_docker - install docker
+    install_dependencies - install dependencies (Python3 / PIP3 / JQ)
+    install - pulls latest docker image from server (no compiling)
+    start - starts EFTG container
+    stop - stops EFTG container
+    status - show status of EFTG container
+    restart - restarts EFTG container
+    witness - witness node setup
+    wallet - open cli_wallet in the container
+    remote_wallet - open cli_wallet in the container connecting to a remote seed
+    enter - enter a bash session in the container
+    logs - show all logs inc. docker logs, and EFTG logs
+    cleanup - remove block_log & shared_memory file
+    optimize - modify kernel parameters for better disk caching
+```
 
 # LICENSE
 
