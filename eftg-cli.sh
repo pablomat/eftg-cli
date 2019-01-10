@@ -47,7 +47,7 @@ help() {
     echo
     echo "Commands: "
     echo "    setup - initializes script with all requirements"
-    echo "    dlblocks - download the blockchain to speed up your first start"
+    #echo "    dlblocks - download the blockchain to speed up your first start"
     echo "    install_docker - install docker"
     echo "    install_dependencies - install dependencies (Python3 / PIP3 / JQ)"
     echo "    install - pulls latest docker image from server (no compiling)"
@@ -114,9 +114,11 @@ initwit() {
 updatewit() {
     printf "%s\n" "The properties of the witness account will be updated and broadcasted to the network"
     read -r -p "Are you sure you want to proceed? (yes/no) " yn
-    case ${yn} in [Yy]* ) return;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
-    getkeys
-    [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
+    case ${yn} in [Yy]* ) ;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
+    if [[ ! -s "${DIR}/.credentials.json" ]]; then
+	    getkeys
+	    [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
+    fi
     user="$(/usr/bin/jq -r '.name' "${DIR}/.credentials.json")"
     owner_pubkey="$(/usr/bin/jq -r '.owner[] | select(.type == "public") | .value' "${DIR}/.credentials.json")"
     active_privkey="$(/usr/bin/jq -r '.active[] | select(.type == "private") | .value' "${DIR}/.credentials.json")"
@@ -443,6 +445,11 @@ case $1 in
     witness_update)
         updatewit
         ;;
+    witness)
+	initwit
+	echo
+	updatewit
+	;;
     start)
         start
         ;;
