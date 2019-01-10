@@ -3,14 +3,14 @@
 #
 # Author : Pablo M. Staiano (pablo at xdevit dot com)
 #
-# This script facilitates the usage of EFTG
+# This script facilitates the operation of an EFTG node
 #
 #
-# Release v0.1
+# Release v0.2
 #
 # Changelog :
 #               v0.1 : First release (2018/10/15) - Adapted from previous code.
-#               v0.2 : Second release
+#               v0.2 : Second release (2019/01/11) - Tested with a few witnesses
 #               v0.3 : Third release
 #
 #
@@ -315,83 +315,7 @@ remote_wallet() {
 logs() {
     echo "${BLUE}DOCKER LOGS: (press ctrl-c to exit) ${RESET}"
     docker logs -f --tail=30 ${DOCKER_NAME}
-    #echo $RED"INFO AND DEBUG LOGS: "$RESET
-    #tail -n 30 $DATADIR/{info.log,debug.log}
 }
-
-#pclogs() {
-#    if [[ ! $(command -v jq) ]]; then
-#        echo "${RED}jq not found. Attempting to install...${RESET}"
-#        sleep 3
-#        sudo apt update
-#        sudo apt install -y jq
-#    fi
-#    local LOG_PATH=$(docker inspect $DOCKER_NAME | jq -r .[0].LogPath)
-#    local pipe=/tmp/dkpipepc.fifo
-#    trap "rm -f $pipe" EXIT
-#    if [[ ! -p $pipe ]]; then
-#        mkfifo $pipe
-#    fi
-#    # the sleep is a dirty hack to keep the pipe open
-#
-#    sleep 10000 < $pipe &
-#    tail -n 5000 -f "$LOG_PATH" &> $pipe &
-#    while true
-#    do
-#        if read -r line <$pipe; then
-#            # first grep the data for "M free" to avoid
-#            # needlessly processing the data
-#            L=$(grep --colour=never "M free" <<< "$line")
-#            if [[ $? -ne 0 ]]; then
-#                continue
-#            fi
-#            # then, parse the line and print the time + log
-#            L=$(jq -r ".time +\" \" + .log" <<< "$L")
-#            # then, remove excessive \r's causing multiple line breaks
-#            L=$(sed -e "s/\r//" <<< "$L")
-#            # now remove the decimal time to make the logs cleaner
-#            L=$(sed -e 's/\..*Z//' <<< "$L")
-#            # and finally, strip off any duplicate new line characters
-#            L=$(tr -s "\n" <<< "$L")
-#            printf '%s\r\n' "$L"
-#        fi
-#    done
-#}
-
-#tslogs() {
-#    if [[ ! $(command -v jq) ]]; then
-#        echo "${RED}jq not found. Attempting to install...${RESET}"
-#        sleep 3
-#        sudo apt update
-#        sudo apt install -y jq
-#    fi
-#    local LOG_PATH=$(docker inspect $DOCKER_NAME | jq -r .[0].LogPath)
-#    local pipe=/tmp/dkpipe.fifo
-#    trap "rm -f $pipe" EXIT
-#    if [[ ! -p $pipe ]]; then
-#        mkfifo $pipe
-#    fi
-#    # the sleep is a dirty hack to keep the pipe open
-#
-#    sleep 10000 < $pipe &
-#    tail -n 100 -f "$LOG_PATH" &> $pipe &
-#    while true
-#    do
-#        if read -r line <$pipe; then
-#            # first, parse the line and print the time + log
-#            L=$(jq -r ".time +\" \" + .log" <<<"$line")
-#            # then, remove excessive \r's causing multiple line breaks
-#            L=$(sed -e "s/\r//" <<< "$L")
-#            # now remove the decimal time to make the logs cleaner
-#            L=$(sed -e 's/\..*Z//' <<< "$L")
-#            # remove the steem ms time because most people don't care
-#            L=$(sed -e 's/[0-9]\+ms //' <<< "$L")
-#            # and finally, strip off any duplicate new line characters
-#            L=$(tr -s "\n" <<< "$L")
-#            printf '%s\r\n' "$L"
-#        fi
-#    done
-#}
 
 status() {
     
@@ -412,13 +336,6 @@ status() {
     fi
 
 }
-
-#hash docker 2>/dev/null || { echo "${RED}Docker is required for this script to work, proceeding to installation.${RESET}"; install_docker; exit; }
-#hash python3 2>/dev/null || { echo "${RED}Python3 is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
-#hash pip3 2>/dev/null || { echo "${RED}Python3-pip is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
-#hash git 2>/dev/null || { echo "${RED}Git is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
-#hash jq 2>/dev/null || { echo "${RED}jq is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
-#hash beempy 2>/dev/null || { echo "${RED}Beem is required for this script to work, proceeding to installation.${RESET}"; install_dependencies; exit; }
 
 if [[ ! -f "${DATADIR}/witness/config.ini" ]]; then
     echo "config.ini not found. copying example (seed)";
@@ -446,10 +363,10 @@ case $1 in
         updatewit
         ;;
     witness)
-	initwit
-	echo
-	updatewit
-	;;
+        initwit
+        echo
+        updatewit
+        ;;
     start)
         start
         ;;
