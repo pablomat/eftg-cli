@@ -16,7 +16,7 @@ seed-node = 23.97.135.184:2001          # trappist.westeurope.cloudapp.azure.com
 seed-node = 137.117.165.158:2001        # centauri.westeurope.cloudapp.azure.com
 seed-node = 40.118.123.96:2001          # kapteyn.westeurope.cloudapp.azure.com
 
-shared-file-size = 1G
+shared-file-size = 2G
 enable-stale-production = false
 
 enable-plugin = witness

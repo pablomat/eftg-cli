@@ -56,6 +56,7 @@ help() {
     echo "    status - show status of EFTG container"
     echo "    restart - restarts EFTG container"
     echo "    witness - witness node setup"
+    echo "    disable_witness - disable a witness"
     echo "    wallet - open cli_wallet in the container"
     echo "    remote_wallet - open cli_wallet in the container connecting to a remote seed"
     echo "    enter - enter a bash session in the container"
@@ -123,6 +124,19 @@ updatewit() {
     owner_pubkey="$(/usr/bin/jq -r '.owner[] | select(.type == "public") | .value' "${DIR}/.credentials.json")"
     active_privkey="$(/usr/bin/jq -r '.active[] | select(.type == "private") | .value' "${DIR}/.credentials.json")"
     "${DIR}/scripts/python/update_witness.py" update "${user}" "${active_privkey}" --publicownerkey "${owner_pubkey}" --blocksize 131072 --url "https://eftg.blkcc.xyz/@${user}" --creationfee "0.100 EFTG" --interestrate 0
+}
+
+disablewit() {
+    printf "%s\n" "This operation will disable your witness"
+    read -r -p "Are you sure you want to proceed? (yes/no) " yn
+    case ${yn} in [Yy]* ) ;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
+    if [[ ! -s "${DIR}/.credentials.json" ]]; then
+	    getkeys
+	    [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
+    fi
+    user="$(/usr/bin/jq -r '.name' "${DIR}/.credentials.json")"
+    active_privkey="$(/usr/bin/jq -r '.active[] | select(.type == "private") | .value' "${DIR}/.credentials.json")"
+    "${DIR}/scripts/python/update_witness.py" disable "${user}" "${active_privkey}"
 }
 
 cleanup() {
@@ -366,6 +380,9 @@ case $1 in
         initwit
         echo
         updatewit
+        ;;
+    disable_witness)
+        disablewit
         ;;
     start)
         start
