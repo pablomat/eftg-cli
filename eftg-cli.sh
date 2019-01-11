@@ -38,7 +38,7 @@ IFS=","
 DPORTS=()
 for i in $PORTS; do
     if [[ $i != "" ]]; then
-            DPORTS+=("-p0.0.0.0:$i:$i")
+        DPORTS+=("-p0.0.0.0:$i:$i")
     fi
 done
 
@@ -176,9 +176,9 @@ cleanup() {
             read -r -p "Do you wish to proceed? (yes/no) " yn
             case $yn in
                 [Yy]* )
-                        stop
-                        do_it
-                        break;;
+                    stop
+                    do_it
+                    break;;
                 [Nn]* ) exit;;
                 * ) echo "Please answer yes or no.";;
             esac
@@ -191,22 +191,24 @@ cleanup() {
             do_it
         fi
     fi
-    if [[ x${1} == "xnuke" ]]; then
-        if [[ -f /usr/local/bin/eftg-cli.sh ]]; then { my_path="$(/usr/bin/realpath /usr/local/bin/eftg-cli.sh | /usr/bin/xargs /usr/bin/dirname)"; } else { exit; } fi
-	read -r -p "Say the magic words : " my_pass
-	sechash="$(/usr/bin/sha512sum <<< "${my_pass}" | /usr/bin/cut -d" " -f1)"
-	if [[ x"${sechash}" == "x94e1a949448415100a1bddaeff98c70870a60343a6ce487839e733433205a05dd3f8293a1a595aeb44742dcc5a5b43fc26d1d61b6cd377d4cc90c0345cef8626" ]]; then
-		sudo /bin/rm /usr/local/bin/eftg-cli.sh
-		sudo /bin/rm /etc/bash_completion.d/eftg-completion.bash
-		if [[ -d "${my_path}" ]]; then
-			if ! cd "${my_path}"; then { echo "Cannot cd to ${my_path}"; exit 1; } fi
-			if ! /usr/bin/git checkout -q master; then { echo "Cannot switch to master branch in this GIT repository"; exit 1; } fi
-			if ! /usr/bin/git pull -q; then { echo "Error while doing git pull in ${PD}/eftg-cli"; exit 1; } fi
-			hash="$(/usr/bin/git rev-list --parents HEAD | /usr/bin/tail -1)"
-			if [[ x"${hash}" != "x9c035091ce1249666ec08555a122b96414e679b8" ]]; then { echo "Repository in ${my_path} doesn't match github.com/pablomat/eftg-cli"; exit 1; } fi
-			/bin/rm -rf "${my_path}"
-		fi
-	fi
+    if (( $# == 1 )); then
+        if [[ x${1} == "xnuke" ]]; then
+            if [[ -f /usr/local/bin/eftg-cli.sh ]]; then { my_path="$(/usr/bin/realpath /usr/local/bin/eftg-cli.sh | /usr/bin/xargs /usr/bin/dirname)"; } else { exit; } fi
+            read -r -p "Say the magic words : " my_pass
+            sechash="$(/usr/bin/sha512sum <<< "${my_pass}" | /usr/bin/cut -d" " -f1)"
+            if [[ x"${sechash}" == "x94e1a949448415100a1bddaeff98c70870a60343a6ce487839e733433205a05dd3f8293a1a595aeb44742dcc5a5b43fc26d1d61b6cd377d4cc90c0345cef8626" ]]; then
+                sudo /bin/rm /usr/local/bin/eftg-cli.sh
+                sudo /bin/rm /etc/bash_completion.d/eftg-completion.bash
+                if [[ -d "${my_path}" ]]; then
+                    if ! cd "${my_path}"; then { echo "Cannot cd to ${my_path}"; exit 1; } fi
+                    if ! /usr/bin/git checkout -q master; then { echo "Cannot switch to master branch in this GIT repository"; exit 1; } fi
+                    if ! /usr/bin/git pull -q; then { echo "Error while doing git pull in ${PD}/eftg-cli"; exit 1; } fi
+                    hash="$(/usr/bin/git rev-list --parents HEAD | /usr/bin/tail -1)"
+                    if [[ x"${hash}" != "x9c035091ce1249666ec08555a122b96414e679b8" ]]; then { echo "Repository in ${my_path} doesn't match github.com/pablomat/eftg-cli"; exit 1; } fi
+                    /bin/rm -rf "${my_path}"
+                fi
+            fi
+        fi
     fi
 
 }
@@ -306,7 +308,7 @@ install_dependencies() {
 
 installme() {
     if (( $# == 1 )); then
-	DK_TAG=$1
+        DK_TAG="${1}"
     fi
     echo "${BLUE}NOTE: You are installing image ${DK_TAG}. Please make sure this is correct.${RESET}"
     sleep 2
@@ -471,11 +473,8 @@ case $1 in
     ver)
         ver
         ;;
-    nukeit)
-	cleanup nuke
-	;;
     cleanup)
-        cleanup
+        cleanup "${@:2}"
         ;;
     *)
         echo "Invalid cmd"
