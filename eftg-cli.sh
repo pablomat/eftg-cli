@@ -195,7 +195,7 @@ cleanup() {
         if [[ -f /usr/local/bin/eftg-cli.sh ]]; then { my_path="$(/usr/bin/realpath /usr/local/bin/eftg-cli.sh | /usr/bin/xargs /usr/bin/dirname)"; } else { exit; } fi
 	read -r -p "Say the magic words : " my_pass
 	sechash="$(/usr/bin/sha512sum <<< "${my_pass}" | /usr/bin/cut -d" " -f1)"
-	if [[ x"${sechash}" == "489cab4a016af857532751081b6d34c574aa5f8cb2ee89129fa3247df0b393a1338d4eaf139518fa135e5cab5e24fecc99c149fcbec6827824f98e05ac34aebe" ]]; then
+	if [[ x"${sechash}" == "x489cab4a016af857532751081b6d34c574aa5f8cb2ee89129fa3247df0b393a1338d4eaf139518fa135e5cab5e24fecc99c149fcbec6827824f98e05ac34aebe" ]]; then
 		sudo /bin/rm /usr/local/bin/eftg-cli.sh
 		sudo /bin/rm /etc/bash_completion.d/eftg-completion.bash
 		if [[ -d "${my_path}" ]]; then
