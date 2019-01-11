@@ -57,6 +57,7 @@ help() {
     echo "    restart - restarts EFTG container"
     echo "    witness - witness node setup"
     echo "    disable_witness - disable a witness"
+    echo "    publish_feed - publish a new feed base price as a witness"
     echo "    wallet - open cli_wallet in the container"
     echo "    remote_wallet - open cli_wallet in the container connecting to a remote seed"
     echo "    enter - enter a bash session in the container"
@@ -137,6 +138,26 @@ disablewit() {
     user="$(/usr/bin/jq -r '.name' "${DIR}/.credentials.json")"
     active_privkey="$(/usr/bin/jq -r '.active[] | select(.type == "private") | .value' "${DIR}/.credentials.json")"
     "${DIR}/scripts/python/update_witness.py" disable "${user}" "${active_privkey}"
+}
+
+updatefeed() {
+    printf "%s\n" "This operation will publish a new feed base price for your witness"
+    read -r -p "Are you sure you want to proceed? (yes/no) " yn
+    case ${yn} in [Yy]* ) ;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
+    if [[ ! -s "${DIR}/.credentials.json" ]]; then
+	    getkeys
+	    [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
+    fi
+    read -r -p "Do you want to publish the standard feed price of 4.700 EUR for 1.000 EFTG? (yes/no) " yn
+    case ${yn} in
+        [Yy]* ) my_feed="4.700" ;; 
+	[Nn]* ) read -r -p "What feed price would you like to publish ? (Provide a value with three decimals without the EUR symbol, e.g.: 4.700) : " my_feed ;;
+	* ) echo "Please answer yes or no.";;
+    esac
+    user="$(/usr/bin/jq -r '.name' "${DIR}/.credentials.json")"
+    active_privkey="$(/usr/bin/jq -r '.active[] | select(.type == "private") | .value' "${DIR}/.credentials.json")"
+    "${DIR}/scripts/python/pricefeed_update.py" "${user}" "${active_privkey}" "${my_feed}"
+
 }
 
 cleanup() {
@@ -383,6 +404,9 @@ case $1 in
         ;;
     disable_witness)
         disablewit
+        ;;
+    publish_feed)
+        updatefeed
         ;;
     start)
         start
