@@ -28,9 +28,9 @@ RED="$(tput setaf 1)"
 GREEN="$(tput setaf 2)"
 BLUE="$(tput setaf 4)"
 RESET="$(tput sgr0)"
-: ${DK_TAG="eftg/main:latest"}
+: "${DK_TAG="eftg/main:latest"}"
 #SHM_DIR=/dev/shm
-: ${REMOTE_WS="wss://kapteyn.westeurope.cloudapp.azure.com:8089"}
+: "${REMOTE_WS="wss://kapteyn.westeurope.cloudapp.azure.com:8089"}"
 LOGOPT=("--log-opt" "max-size=100m" "--log-opt" "max-file=50")
 PORTS="2001,8090"
 
@@ -341,7 +341,7 @@ start() {
     if seed_exists; then
         docker start $DOCKER_NAME
     else
-        docker run ${DPORTS[@]} -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img /usr/local/eftgd-default/bin/steemd -d /eftg/witness
+        docker run "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img /usr/local/eftgd-default/bin/steemd -d /eftg/witness
     fi
 }
 
