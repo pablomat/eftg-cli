@@ -63,6 +63,7 @@ help() {
     echo "    enter - enter a bash session in the container"
     echo "    logs - show all logs inc. docker logs, and EFTG logs"
     echo "    cleanup - remove block_log & shared_memory file"
+    echo "    info - query information about the blockchain, a block, an account, a post/comment and/or public keys"
     echo "    optimize - modify kernel parameters for better disk caching"
     echo
     exit
@@ -96,6 +97,19 @@ getkeys() {
     read -r -p "Please enter your EFTG master password: " pass
     [[ -f "${DIR}/.credentials.json" ]] && { rm "${DIR}/.credentials.json"; }
     "${DIR}/scripts/python/get_user_keys.py" "${user}" "${pass}" > "${DIR}/.credentials.json" 
+}
+
+getinfo() {
+    if [[ -e "${HOME}"/.local/bin/beempy ]]; then
+        local_version="$("${HOME}"/.local/bin/beempy --version)"
+        if [[ x"${local_version}" == "xbeempy, version 0.20.9" ]]; then
+            if [[ "${#}" -gt 0 ]]; then
+                "${HOME}"/.local/bin/beempy -n https://api.blkcc.xyz info "${@}"
+            else
+                "${HOME}"/.local/bin/beempy -n https://api.blkcc.xyz info
+            fi
+        fi
+    fi
 }
 
 initwit() {
@@ -464,14 +478,8 @@ case $1 in
     logs)
         logs
         ;;
-    pclogs)
-        pclogs
-        ;;
-    tslogs)
-        tslogs
-        ;;
-    ver)
-        ver
+    info)
+        getinfo "${@:2}"
         ;;
     cleanup)
         cleanup "${@:2}"
