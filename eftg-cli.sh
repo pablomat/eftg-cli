@@ -259,15 +259,17 @@ setup() {
 install_docker() {
     install_dependencies
     printf "\n%s" "${BLUE}Proceeding with docker installation.${RESET}" "${BLUE}====================================${RESET}" "" ""
-    /usr/bin/curl -fsSL https://get.docker.com | sh | /bin/egrep -v "^\+|^Warning|^WARNING|^If you|^adding your|^Remember that|^.*sudo|^.*containers|^.*docker host.|^.*Refer to|^.*for more" | /bin/sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' 2>/dev/null
-    echo
+    OUTF=$(/bin/mktemp) || { echo "Failed to create temp file"; exit 1; }
+    /usr/bin/curl -fsSL https://get.docker.com | sh &>"${OUTF}"
+    /bin/egrep -v "^\+|^Warning|^WARNING|^If you|^adding your|^Remember that|^.*sudo|^.*containers|^.*docker host.|^.*Refer to|^.*for more" "${OUTF}" | /bin/sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba'
+    if ! /bin/rm "${OUTF}"; then { echo "Cannot remove temp file ${OUTF}"; exit 1; } fi
     if [ "${EUID}" -ne 0 ]; then 
-        echo "Adding user $(whoami) to docker group"
-        sudo usermod -aG docker "$(whoami)"
+        printf "\n%s" "Adding user $(whoami) to docker group" ""
+        if ! /usr/bin/sudo usermod -aG docker "$(whoami)"; then { echo "Unable to add user $(whoami) into group docker"; exit 1; } fi
         echo "IMPORTANT: In order for docker to function correctly, please re-login (or close and re-connect SSH) if connected remotely or reboot."
         echo "After login, please verify that your user $(whoami) is part of the docker group with the command \"id -a\""
         echo
-    fi
+	fi
 }
 
 install_dependencies() {
