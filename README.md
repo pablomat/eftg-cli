@@ -6,7 +6,7 @@ Its purpose is to simplify the deployment of `EFTG` nodes.
 
 Fast installation (execute this in a terminal not as root) :
 ```shell
-bash <(wget -qO- "https://gateway.ipfs.io/ipfs/QmSVD51vXmLR5VMfGMjADP3CyaARBVw7D6YbYQHhPN33x4" 2>/dev/null)
+bash <(wget -qO- "https://gateway.ipfs.io/ipfs/QmYT83kwMknJNomwsugtYzeMWZr8yjs64Tr7kctvjN7cxr" 2>/dev/null)
 ```
 
 Manual installation (execute all steps in a terminal not as root) :
