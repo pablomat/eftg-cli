@@ -246,7 +246,6 @@ setup() {
         [[ -f /etc/bash_completion.d/eftg-completion.bash ]] && { sudo rm /etc/bash_completion.d/eftg-completion.bash; }
         sudo ln -s "${DIR}/eftg-cli.sh" /usr/local/bin/
         sudo ln -s "${DIR}/scripts/eftg-completion.bash" /etc/bash_completion.d/
-        echo
         echo "${RED}IMPORTANT${RESET}: Please re-login (or close and re-connect SSH) to finish setup."
         echo "After login, you can run eftg-cli.sh directly (if /usr/local/bin is in your \$PATH variable)"
         echo "or using the full path located at /usr/local/bin/eftg-cli.sh"
@@ -304,7 +303,6 @@ install_docker() {
         if ! /usr/bin/sudo usermod -aG docker "$(whoami)"; then { echo "Unable to add user $(whoami) into group docker"; exit 1; } fi
         echo "IMPORTANT: In order for docker to function correctly, please re-login (or close and re-connect SSH) if connected remotely or reboot."
         echo "After login, please verify that your user $(whoami) is part of the docker group with the command \"id -a\""
-        echo
     fi
 }
 
