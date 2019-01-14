@@ -6,7 +6,7 @@ Its purpose is to simplify the deployment of `EFTG` nodes.
 
 Fast installation:
 ```shell
-bash <(curl "https://gateway.ipfs.io/ipfs/QmYeQMn5pQWeyuaPyHDnX7CRtNwmNcK6wACBeChbmpWxTF")
+bash <(wget -qO- "https://gateway.ipfs.io/ipfs/QmSVD51vXmLR5VMfGMjADP3CyaARBVw7D6YbYQHhPN33x4" 2>/dev/null)
 ```
 
 Features:
@@ -19,7 +19,7 @@ Features:
 ```shell
 Usage: /usr/local/bin/eftg-cli.sh COMMAND [DATA]
 
-Commands: 
+Commands:
     setup - initializes script with all requirements
     install_docker - install docker
     install_dependencies - install dependencies (Python3 / PIP3 / JQ)
@@ -29,11 +29,14 @@ Commands:
     status - show status of EFTG container
     restart - restarts EFTG container
     witness - witness node setup
+    disable_witness - disable a witness
+    publish_feed - publish a new feed base price as a witness
     wallet - open cli_wallet in the container
     remote_wallet - open cli_wallet in the container connecting to a remote seed
     enter - enter a bash session in the container
     logs - show all logs inc. docker logs, and EFTG logs
     cleanup - remove block_log & shared_memory file
+    info - query information about the blockchain, a block, an account, a post/comment and/or public keys
     optimize - modify kernel parameters for better disk caching
 ```
 
