@@ -76,6 +76,19 @@ optimize() {
     echo 30000 | sudo tee /proc/sys/vm/dirty_writeback_centisecs
 }
 
+spin() {
+    spinner="/|\\-/|\\-"
+    while :
+    do
+        for X in 0 1 2 3 4 5 6 7
+        do
+            echo -n "${spinner:${X}:1}"
+            echo -en "\010"
+            sleep 1
+        done
+    done
+}
+
 dlblocks() {
     if [[ ! -d "${DATADIR}/blockchain" ]]; then
         mkdir "${DATADIR}/blockchain"
@@ -243,6 +256,7 @@ setup() {
     hash docker 2>/dev/null || { echo "${RED}Docker is required for this script to work, proceeding to installation.${RESET}"; install_docker; }
 
     if [[ -f /usr/local/bin/eftg-cli.sh && -f /etc/bash_completion.d/eftg-completion.bash ]]; then
+        printf "\n%s" "${BLUE}Proceeding with eftg-cli environment setup.${RESET}" "${BLUE}===========================================${RESET}" "" ""
         while true; do
             read -r -p "It looks like this setup was already executed, would you like to re-run it ? (yes/no) " yn
             case $yn in
@@ -259,17 +273,38 @@ setup() {
 install_docker() {
     install_dependencies
     printf "\n%s" "${BLUE}Proceeding with docker installation.${RESET}" "${BLUE}====================================${RESET}" "" ""
+
+    spin &
+    SPIN_PID=$!
+    disown
+    trap '/bin/kill -9 ${SPIN_PID}' SIGHUP SIGINT SIGQUIT SIGILL SIGTRAP SIGABRT SIGBUS SIGFPE SIGUSR1 SIGSEGV SIGUSR2 SIGPIPE SIGALRM SIGTERM
+
     OUTF=$(/bin/mktemp) || { echo "Failed to create temp file"; exit 1; }
+
     /usr/bin/curl -fsSL https://get.docker.com | sh &>"${OUTF}"
-    /bin/egrep -v "^\+|^Warning|^WARNING|^If you|^adding your|^Remember that|^.*sudo|^.*containers|^.*docker host.|^.*Refer to|^.*for more" "${OUTF}" | /bin/sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba'
+
+    /bin/kill -9 $SPIN_PID
+    trap - SIGHUP SIGINT SIGQUIT SIGILL SIGTRAP SIGABRT SIGBUS SIGFPE SIGUSR1 SIGSEGV SIGUSR2 SIGPIPE SIGALRM SIGTERM
+
+    /bin/grep -Ev "^\+|^Warning|^WARNING|^If you|^adding your|^Remember that|^.*sudo|^.*containers|^.*docker host.|^.*Refer to|^.*for more" "${OUTF}" | /bin/sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba'
+
     if ! /bin/rm "${OUTF}"; then { echo "Cannot remove temp file ${OUTF}"; exit 1; } fi
+
     if [ "${EUID}" -ne 0 ]; then 
-        printf "\n%s" "Adding user $(whoami) to docker group" ""
+        my_text="Adding user $(whoami) to docker group."
+        COUNTER=1
+        my_line="="
+        while [[ ${COUNTER} -lt "${#my_text}" ]]; do
+            my_line="${my_line}="
+            let COUNTER=COUNTER+1
+        done
+        #my_line="$(printf '=%.0s' $(/usr/bin/seq 1 ${#my_text}))"
+        printf "\n%s" "${BLUE}${my_text}${RESET}" "${BLUE}${my_line}${RESET}" "" ""
         if ! /usr/bin/sudo usermod -aG docker "$(whoami)"; then { echo "Unable to add user $(whoami) into group docker"; exit 1; } fi
         echo "IMPORTANT: In order for docker to function correctly, please re-login (or close and re-connect SSH) if connected remotely or reboot."
         echo "After login, please verify that your user $(whoami) is part of the docker group with the command \"id -a\""
         echo
-	fi
+    fi
 }
 
 install_dependencies() {
@@ -312,16 +347,16 @@ install_dependencies() {
             read -r -p "Do you wish to install these packages? (yes/no) " yn
             case $yn in
                 [Yy]* )
-                        sudo apt -qq update;
-                        sudo apt -qq install "${count[@]}";
-                        if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.9; } fi;
-                        break;;
+                    sudo apt -qq update &>/dev/null;
+                    sudo apt -qq install "${count[@]}";
+                    if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.9; } fi;
+                    break;;
                 [Nn]* ) exit;;
                 * ) echo "Please answer yes or no.";;
             esac
         done
-        else
-            if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.9; } fi
+    else
+        if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.9; } fi
     fi
     set -u
 }
