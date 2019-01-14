@@ -11,6 +11,7 @@ bash <(wget -qO- "https://gateway.ipfs.io/ipfs/QmSVD51vXmLR5VMfGMjADP3CyaARBVw7D
 
 Manual installation (execute all steps in a terminal not as root) :
 ```shell
+sudo apt install git # install git if not available
 git clone https://github.com/pablomat/eftg-cli.git
 cd ~/eftg-cli
 ./eftg-cli.sh install_dependencies
