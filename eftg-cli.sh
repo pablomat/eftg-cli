@@ -239,6 +239,7 @@ setup() {
         echo "or using the full path located at /usr/local/bin/eftg-cli.sh"
         echo
     }
+
     hash docker 2>/dev/null || { echo "${RED}Docker is required for this script to work, proceeding to installation.${RESET}"; install_docker; }
 
     if [[ -f /usr/local/bin/eftg-cli.sh && -f /etc/bash_completion.d/eftg-completion.bash ]]; then
@@ -257,7 +258,9 @@ setup() {
 
 install_docker() {
     install_dependencies
-    curl https://get.docker.com | sh
+    printf "\n%s" "${BLUE}Proceeding with docker installation.${RESET}" "${BLUE}====================================${RESET}" "" ""
+    /usr/bin/curl -s https://get.docker.com | sh
+    echo
     if [ "${EUID}" -ne 0 ]; then 
         echo "Adding user $(whoami) to docker group"
         sudo usermod -aG docker "$(whoami)"
@@ -306,16 +309,16 @@ install_dependencies() {
             read -r -p "Do you wish to install these packages? (yes/no) " yn
             case $yn in
                 [Yy]* )
-                        sudo apt update;
-                        sudo apt install "${count[@]}";
-                        if ! pip3 show beem &>/dev/null; then { pip3 install -U beem==0.20.9; } fi;
+                        sudo apt -qq update;
+                        sudo apt -qq install "${count[@]}";
+                        if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.9; } fi;
                         break;;
                 [Nn]* ) exit;;
                 * ) echo "Please answer yes or no.";;
             esac
         done
         else
-            if ! pip3 show beem &>/dev/null; then { pip3 install -U beem==0.20.9; } fi
+            if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.9; } fi
     fi
     set -u
 }
