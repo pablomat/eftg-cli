@@ -259,7 +259,7 @@ setup() {
         while true; do
             read -r -p "It looks like this setup was already executed, would you like to re-run it ? (yes/no) " yn
             case $yn in
-                [Yy]* ) do_it; break;;
+                [Yy]* ) echo; do_it; break;;
                 [Nn]* ) exit;;
                 * ) echo "Please answer yes or no.";;
             esac
