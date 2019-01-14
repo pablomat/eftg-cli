@@ -60,7 +60,7 @@ install_dependencies() {
                         exit 1
                     fi
                     sudo apt -qq update &>/dev/null;
-                    sudo apt -qq install -y "${count[@]}";
+                    sudo apt-get install -y -o Dpkg::Progress-Fancy="1" "${count[@]}" -qq;
                     if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.9; } fi;
                     break;;
                 [Nn]* ) exit;;
