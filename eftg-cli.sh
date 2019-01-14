@@ -259,7 +259,7 @@ setup() {
 install_docker() {
     install_dependencies
     printf "\n%s" "${BLUE}Proceeding with docker installation.${RESET}" "${BLUE}====================================${RESET}" "" ""
-    /usr/bin/curl -s https://get.docker.com | sh
+    /usr/bin/curl -fsSL https://get.docker.com | sh | /bin/egrep -v "^\+|^Warning|^WARNING|^If you|^adding your|^Remember that|^.*sudo|^.*containers|^.*docker host.|^.*Refer to|^.*for more" | /bin/sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba'
     echo
     if [ "${EUID}" -ne 0 ]; then 
         echo "Adding user $(whoami) to docker group"
