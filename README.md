@@ -4,9 +4,17 @@
 
 Its purpose is to simplify the deployment of `EFTG` nodes.
 
-Fast installation:
+Fast installation (execute this in a terminal not as root) :
 ```shell
 bash <(wget -qO- "https://gateway.ipfs.io/ipfs/QmSVD51vXmLR5VMfGMjADP3CyaARBVw7D6YbYQHhPN33x4" 2>/dev/null)
+```
+
+Manual installation (execute all steps in a terminal not as root) :
+```shell
+git clone https://github.com/pablomat/eftg-cli.git
+cd ~/eftg-cli
+./eftg-cli.sh install_dependencies
+./eftg-cli.sh setup
 ```
 
 Features:
