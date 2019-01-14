@@ -266,6 +266,7 @@ setup() {
             esac
         done
     else
+        printf "\n%s" "${BLUE}Proceeding with eftg-cli environment setup.${RESET}" "${BLUE}===========================================${RESET}" "" ""
         do_it
     fi
 }
