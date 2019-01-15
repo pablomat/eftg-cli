@@ -2,7 +2,7 @@
 
 **eftg-cli** is a toolkit for using the EFTG [docker images](https://hub.docker.com/r/eftg/main/tags/).
 
-Its purpose is to simplify the deployment of `EFTG` nodes.
+Its purpose is to simplify the deployment of `EFTG` nodes. Compatible with Ubuntu 18.04 LTS.
 
 Fast installation (execute this in a terminal not as root) :
 ```shell
