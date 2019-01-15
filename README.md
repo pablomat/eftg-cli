@@ -9,16 +9,6 @@ Fast installation (execute this in a terminal not as root) :
 bash <(wget -qO- "https://gateway.ipfs.io/ipfs/QmYT83kwMknJNomwsugtYzeMWZr8yjs64Tr7kctvjN7cxr" 2>/dev/null)
 ```
 
-Manual installation (execute all steps in a terminal not as root) :
-```shell
-sudo apt install git # install git if not available
-sudo add-apt-repository universe # add 'universe' repository to sources if not present
-git clone https://github.com/pablomat/eftg-cli.git
-cd ~/eftg-cli
-./eftg-cli.sh install_dependencies
-./eftg-cli.sh setup
-```
-
 Features:
 
  - Automatic docker installer
@@ -48,6 +38,16 @@ Commands:
     cleanup - remove block_log & shared_memory file
     info - query information about the blockchain, a block, an account, a post/comment and/or public keys
     optimize - modify kernel parameters for better disk caching
+```
+
+Manual installation if fast option was not used (execute all steps in a terminal not as root) :
+```shell
+sudo apt install git # install git if not available
+sudo add-apt-repository universe # add 'universe' repository to sources if not present
+git clone https://github.com/pablomat/eftg-cli.git
+cd ~/eftg-cli
+./eftg-cli.sh install_dependencies
+./eftg-cli.sh setup
 ```
 
 # LICENSE
