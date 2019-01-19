@@ -8,21 +8,27 @@ from beem.transactionbuilder import TransactionBuilder
 from beembase import operations
 from argparse import ArgumentParser
 from beem.instance import set_shared_steem_instance
-import json, sys
+import os.path, json, sys
 
 stm = Steem(node=["https://api.blkcc.xyz"])
 set_shared_steem_instance(stm)
 prefix = stm.prefix
 
 parser = ArgumentParser()
-parser.add_argument('account', type=str, nargs=1)
-parser.add_argument('--store-credentials', help="If used, a file with all new credentials will be saved", action='store_true')
+parser.add_argument('account', help="Name of the EFTG Account", type=str, nargs=1)
+parser.add_argument('--store-credentials', help="If used, a file with all new credentials will be saved at the provided location. E.G.: \"/home/user/eftg-cli/.credentials.json\"", type=str)
 args = parser.parse_args()
 
 if checkacc(args.account[0]): 
     acc = Account(args.account[0])
 else:
     sys.exit("The account provided is not a valid account in the EFTG Blockchain. Wrong account " + args.account[0])
+
+if args.store_credentials:
+    fullpath = args.store_credentials
+    if not os.path.exists(fullpath):
+        reldir = os.path.dirname(fullpath)
+        if not os.path.exists(reldir): sys.exit("There's no such directory " + reldir)
 
 cur_password = unix_getpass(prompt='Current password for @%s: ' %
                             (acc['name']))
@@ -83,7 +89,7 @@ print(json.dumps(output, indent=4))
 
 if args.store_credentials:
     #creds = getcred(acc['name'], new_password)
-    with open(acc['name']+".json", 'w') as f: json.dump(data, f)
+    with open(fullpath, 'w') as f: json.dump(data, f)
     print(json.dumps(data, indent=4))
 else:
     print(json.dumps(data, indent=4))
