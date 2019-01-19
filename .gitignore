@@ -1,3 +1,4 @@
+scripts/python/__pycache__/
 data/witness/config.ini*
 .DS_Store
 data/advanced_benchmark.json

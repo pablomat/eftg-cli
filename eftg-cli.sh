@@ -62,6 +62,7 @@ help() {
     echo "    remote_wallet - open cli_wallet in the container connecting to a remote seed"
     echo "    enter - enter a bash session in the container"
     echo "    logs - show all logs inc. docker logs, and EFTG logs"
+    echo "    change_password - change the password of an EFTG account"
     echo "    cleanup - remove block_log & shared_memory file"
     echo "    info - query information about the blockchain, a block, an account, a post/comment and/or public keys"
     echo "    optimize - modify kernel parameters for better disk caching"
@@ -185,6 +186,22 @@ updatefeed() {
     active_privkey="$(/usr/bin/jq -r '.active[] | select(.type == "private") | .value' "${DIR}/.credentials.json")"
     "${DIR}/scripts/python/pricefeed_update.py" "${user}" "${active_privkey}" "${my_feed}"
 
+}
+
+chgpass() {
+    printf "%s\n" "This operation will change the password of your EFTG account"
+    read -r -p "Would you like to keep a copy of your new credentials in ${DIR}/.credentials.json ? (yes/no) " yn
+    case ${yn} in
+        [Yy]* )
+            read -r -p "Please enter your EFTG account name (without the @): " user
+            "${DIR}/scripts/python/change_password.py" "${user}" --store-credentials "${DIR}/.credentials.json" 
+            ;;
+        [Nn]* )
+            read -r -p "Please enter your EFTG account name (without the @): " user
+            "${DIR}/scripts/python/change_password.py" "${user}"
+            ;;
+        * ) echo "Please answer yes or no.";;
+    esac
 }
 
 cleanup() {
@@ -520,6 +537,9 @@ case $1 in
         ;;
     info)
         getinfo "${@:2}"
+        ;;
+    change_password)
+        chgpass
         ;;
     cleanup)
         cleanup "${@:2}"
