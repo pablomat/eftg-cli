@@ -56,7 +56,9 @@ help() {
     echo "    status - show status of EFTG container"
     echo "    restart - restarts EFTG container"
     echo "    witness - witness node setup"
+    echo "    update_witness - "
     echo "    disable_witness - disable a witness"
+    echo "    enable_witness - re-enable a witness"
     echo "    publish_feed - publish a new feed base price as a witness"
     echo "    wallet - open cli_wallet in the container"
     echo "    remote_wallet - open cli_wallet in the container connecting to a remote seed"
@@ -485,7 +487,7 @@ case $1 in
     witness_setup)
         initwit
         ;;
-    witness_update)
+    enable_witness)
         updatewit
         ;;
     witness)
