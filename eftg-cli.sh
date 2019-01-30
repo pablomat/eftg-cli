@@ -56,7 +56,6 @@ help() {
     echo "    status - show status of EFTG container"
     echo "    restart - restarts EFTG container"
     echo "    witness - witness node setup"
-    echo "    update_witness - "
     echo "    disable_witness - disable a witness"
     echo "    enable_witness - re-enable a witness"
     echo "    publish_feed - publish a new feed base price as a witness"
