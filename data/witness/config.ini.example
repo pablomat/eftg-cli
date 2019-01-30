@@ -8,19 +8,20 @@ log-file-appender = {"appender":"p2p","file":"logs/p2p/p2p.log"}
 log-logger = {"name":"default","level":"info","appender":"stderr"}
 log-logger = {"name":"p2p","level":"info","appender":"stderr"}
 
-rpc-endpoint = 0.0.0.0:8090
+webserver-ws-endpoint = 0.0.0.0:8090
 p2p-endpoint = 0.0.0.0:2001
 
-seed-node = 23.97.210.36:2001           # kepler.westeurope.cloudapp.azure.com
-seed-node = 23.97.135.184:2001          # trappist.westeurope.cloudapp.azure.com
-seed-node = 137.117.165.158:2001        # centauri.westeurope.cloudapp.azure.com
-seed-node = 40.118.123.96:2001          # kapteyn.westeurope.cloudapp.azure.com
+p2p-seed-node = 23.97.210.36:2001               # kepler.westeurope.cloudapp.azure.com
+p2p-seed-node = 23.97.135.184:2001              # trappist.westeurope.cloudapp.azure.com
+p2p-seed-node = 65.52.156.67:2001               # ross.westeurope.cloudapp.azure.com
+p2p-seed-node = 137.117.165.158:2001            # centauri.westeurope.cloudapp.azure.com
 
 shared-file-size = 2G
-enable-stale-production = false
 
-enable-plugin = witness
-public-api = database_api witness_api login_api
+# Plugin(s) to enable, may be specified multiple times
+plugin = webserver p2p json_rpc witness
+
+plugin = database_api condenser_api 
 
 #witness = "witness-name"
 #private-key = owner-private-key
