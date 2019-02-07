@@ -366,14 +366,14 @@ install_dependencies() {
                 [Yy]* )
                     sudo apt -qq update &>/dev/null;
                     sudo apt -qq install "${count[@]}";
-                    if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.9; } fi;
+                    if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.18; } fi;
                     break;;
                 [Nn]* ) exit;;
                 * ) echo "Please answer yes or no.";;
             esac
         done
     else
-        if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.9; } fi
+        if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.18; } fi
     fi
     set -u
 }

@@ -61,14 +61,14 @@ install_dependencies() {
                     fi
                     sudo apt -qq update &>/dev/null;
                     sudo apt-get install -y -o Dpkg::Progress-Fancy="1" "${count[@]}" -qq;
-                    if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.9; } fi;
+                    if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.18; } fi;
                     break;;
                 [Nn]* ) exit;;
                 * ) echo "Please answer yes or no.";;
             esac
         done
 	else
-	    if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.9; } else { printf "%s\n" "${GREEN}All pre-requisites are already installed${RESET}"; } fi
+	    if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.18; } else { printf "%s\n" "${GREEN}All pre-requisites are already installed${RESET}"; } fi
     fi
     set -u
 }
