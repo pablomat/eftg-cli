@@ -117,15 +117,15 @@ install_beem() {
 }
 
 dlblocks() {
-    if [[ ! -d "${DATADIR}/blockchain" ]]; then
-        mkdir "${DATADIR}/blockchain"
+    if [[ ! -d "${DATADIR}/witness/blockchain" ]]; then
+        /bin/mkdir -p "${DATADIR}/witness/blockchain"
     fi
     echo "${RED}Removing old block log${RESET}"
-    sudo rm -f "${DATADIR}/witness/blockchain/block_log"
-    sudo rm -f "${DATADIR}/witness/blockchain/block_log.index"
+    /usr/bin/sudo rm -f "${DATADIR}/witness/blockchain/block_log"
+    /usr/bin/sudo rm -f "${DATADIR}/witness/blockchain/block_log.index"
     echo "Downloading EFTG block logs..."
-    wget --quiet "https://seed.blkcc.xyz/block_log" -O "${DATADIR}/witness/blockchain/block_log"
-    wget --quiet "https://seed.blkcc.xyz/MD5SUM" -O "${DATADIR}/witness/blockchain/MD5SUM"
+    /usr/bin/wget --quiet "https://seed.blkcc.xyz/block_log" -O "${DATADIR}/witness/blockchain/block_log"
+    /usr/bin/wget --quiet "https://seed.blkcc.xyz/MD5SUM" -O "${DATADIR}/witness/blockchain/MD5SUM"
     echo "Verifying MD5 checksum... this may take a while..."
     cd "${DATADIR}/witness/blockchain" ; md5sum -c MD5SUM ; cd -
     echo "${GREEN}FINISHED. Blockchain downloaded and verified${RESET}"
