@@ -315,8 +315,8 @@ setup() {
 
 install_docker() {
     install_dependencies
-    if [[ -x "$(command -v docker)" ]]; then { printf "%s\\n" "${GREEN}Docker is already installed${RESET}"; return 0; } fi
     printf "\\n%s" "${BLUE}Proceeding with docker installation.${RESET}" "${BLUE}====================================${RESET}" "" ""
+    if [[ -x "$(command -v docker)" ]]; then { printf "%s\\n" "${GREEN}Docker is already installed${RESET}"; return 0; } fi
 
     spin &
     SPIN_PID=$!
