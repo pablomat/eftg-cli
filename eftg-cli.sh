@@ -33,6 +33,8 @@ RESET="$(tput sgr0)"
 : "${REMOTE_WS="wss://kapteyn.westeurope.cloudapp.azure.com:8089"}"
 LOGOPT=("--log-opt" "max-size=100m" "--log-opt" "max-file=50")
 PORTS="2001,8090"
+RPC_NODE="https://api.eftg.eu"
+BEEM_VER="0.20.18"
 
 IFS=","
 DPORTS=()
@@ -117,11 +119,11 @@ getkeys() {
 getinfo() {
     if [[ -e "${HOME}"/.local/bin/beempy ]]; then
         local_version="$("${HOME}"/.local/bin/beempy --version)"
-        if [[ x"${local_version}" == "xbeempy, version 0.20.9" ]]; then
+        if [[ x"${local_version}" == "xbeempy, version ${BEEM_VER}" ]]; then
             if [[ "${#}" -gt 0 ]]; then
-                "${HOME}"/.local/bin/beempy -n https://api.blkcc.xyz info "${@}"
+                "${HOME}"/.local/bin/beempy -n "${RPC_NODE}" info "${@}"
             else
-                "${HOME}"/.local/bin/beempy -n https://api.blkcc.xyz info
+                "${HOME}"/.local/bin/beempy -n "${RPC_NODE}" info
             fi
         fi
     fi
