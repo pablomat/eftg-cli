@@ -13,7 +13,7 @@ BEEM_VER="0.20.18"
 
 check_beem() {
     local beem_installed="True"
-    if ! pip3 show beem &>/dev/null; then 
+    if ! pip3 show beem &>/dev/null; then
         beem_installed="False"
     else
         if ! version="$(python3 -c 'from beem.version import version; print(version)' 2>/dev/null)"; then
@@ -83,8 +83,8 @@ install_dependencies() {
                     fi
                     sudo apt -qq update &>/dev/null;
                     sudo apt-get install -y -o Dpkg::Progress-Fancy="1" "${count[@]}" -qq;
-                    if ! check_beem; then 
-                        if ! install_beem; then { printf "%s\n" "${RED}Unable to install beem, please report this error - $(date)${RESET}"; } fi 
+                    if ! check_beem; then
+                        if ! install_beem; then { printf "%s\n" "${RED}Unable to install beem, please report this error - $(date)${RESET}"; } fi
                     fi
                     break;;
                 [Nn]* ) exit;;
@@ -92,8 +92,8 @@ install_dependencies() {
             esac
         done
 	else
-        if ! check_beem; then 
-            if ! install_beem; then { printf "%s\n" "${RED}Unable to install beem, please report this error - $(date)${RESET}"; } fi 
+        if ! check_beem; then
+            if ! install_beem; then { printf "%s\n" "${RED}Unable to install beem, please report this error - $(date)${RESET}"; } fi
         else
             printf "%s\n" "${GREEN}All pre-requisites are already installed${RESET}";
         fi

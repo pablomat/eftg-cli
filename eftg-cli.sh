@@ -94,6 +94,26 @@ spin() {
     done
 }
 
+check_beem() {
+    local beem_installed="True"
+    if ! pip3 show beem &>/dev/null; then
+        beem_installed="False"
+    else
+        if ! version="$(python3 -c 'from beem.version import version; print(version)' 2>/dev/null)"; then
+            beem_installed="False"
+        else
+            if [[ x"${version}" != "x${BEEM_VER}" ]]; then
+                beem_installed="False"
+            fi
+        fi
+    fi
+    if [[ x"${beem_installed}" == "xTrue" ]]; then { return 0; } else { return 1; } fi
+}
+
+install_beem() {
+    if pip3 -q install -U beem=="${BEEM_VER}"; then { return 0; } else { return 1; } fi
+}
+
 dlblocks() {
     if [[ ! -d "${DATADIR}/blockchain" ]]; then
         mkdir "${DATADIR}/blockchain"
@@ -361,22 +381,37 @@ install_dependencies() {
         fi
     done
 
+    printf "\n%s" "${BLUE}Checking software dependencies.${RESET}" "${BLUE}===============================${RESET}" "" ""
+
     if [[ ${#count[@]} -ne 0 ]]; then
         echo "In order to run eftg-cli, the following packages need to be installed : ${count[*]}"
         while true; do
             read -r -p "Do you wish to install these packages? (yes/no) " yn
+            echo
             case $yn in
                 [Yy]* )
+                    if [[ -e /etc/apt/sources.list ]]; then
+                        if ! /bin/grep -q universe /etc/apt/sources.list; then { /usr/bin/sudo /usr/bin/add-apt-repository universe &>/dev/null; } fi
+                    else
+                        echo "/etc/apt/sources.list doesn't exist"
+                        exit 1
+                    fi
                     sudo apt -qq update &>/dev/null;
-                    sudo apt -qq install "${count[@]}";
-                    if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.18; } fi;
+                    sudo apt-get install -y -o Dpkg::Progress-Fancy="1" "${count[@]}" -qq;
+                    if ! check_beem; then
+                        if ! install_beem; then { printf "%s\n" "${RED}Unable to install beem, please report this error - $(date)${RESET}"; } fi
+                    fi
                     break;;
                 [Nn]* ) exit;;
                 * ) echo "Please answer yes or no.";;
             esac
         done
-    else
-        if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.18; } fi
+        else
+        if ! check_beem; then
+            if ! install_beem; then { printf "%s\n" "${RED}Unable to install beem, please report this error - $(date)${RESET}"; } fi
+        else
+            printf "%s\n" "${GREEN}All pre-requisites are already installed${RESET}";
+        fi
     fi
     set -u
 }
