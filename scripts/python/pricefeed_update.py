@@ -7,7 +7,7 @@ from beemgraphenebase.account import PrivateKey, PublicKey
 from argparse import ArgumentParser
 from beem.instance import set_shared_steem_instance
 
-stmf = Steem(node=["https://api.blkcc.xyz"])
+stmf = Steem(node=["https://api.eftg.eu"])
 
 def checkwit(username):
     try:
@@ -55,7 +55,7 @@ args = parser.parse_args()
 if checkwit(args.witness[0]):
     if not checkkey(args.witness[0], args.privateactivekey[0], "active"): sys.exit("Private active key " + args.privateactivekey[0] + " doesn't prove authority for Witness " + args.witness[0])
     #Witness exists
-    stm = Steem(node=["https://api.blkcc.xyz"], keys=[args.privateactivekey[0]])
+    stm = Steem(node=["https://api.eftg.eu"], keys=[args.privateactivekey[0]])
     set_shared_steem_instance(stm)
 
     my_feed = "{:.3f} EUR".format(args.baseprice[0])

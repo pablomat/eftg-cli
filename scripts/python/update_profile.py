@@ -6,7 +6,7 @@ from beemgraphenebase.account import PrivateKey, PublicKey
 from argparse import ArgumentParser
 from beem.instance import set_shared_steem_instance
 
-stmf = Steem(node=["https://api.blkcc.xyz"])
+stmf = Steem(node=["https://api.eftg.eu"])
 
 def checkacc(username):
     try:
@@ -77,7 +77,7 @@ if checkacc(args.account[0]):
 
     if args.website: profile["website"] = str(args.website)
 
-    stm = Steem(node=["https://api.blkcc.xyz"], keys=[args.privateactivekey[0]])
+    stm = Steem(node=["https://api.eftg.eu"], keys=[args.privateactivekey[0]])
     set_shared_steem_instance(stm)
 
     output = acc.update_account_profile(profile)

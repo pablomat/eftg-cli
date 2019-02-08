@@ -6,7 +6,7 @@ from beemgraphenebase.account import PrivateKey, PublicKey
 from argparse import ArgumentParser
 from beem.instance import set_shared_steem_instance
 
-stmf = Steem(node=["https://api.blkcc.xyz"])
+stmf = Steem(node=["https://api.eftg.eu"])
 
 def checkacc(username):
     try:
