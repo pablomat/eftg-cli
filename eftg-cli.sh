@@ -315,6 +315,7 @@ setup() {
 
 install_docker() {
     install_dependencies
+    if [[ -x "$(command -v docker)" ]]; then { printf "%s\\n" "${GREEN}Docker is already installed${RESET}"; return 0; } fi
     printf "\\n%s" "${BLUE}Proceeding with docker installation.${RESET}" "${BLUE}====================================${RESET}" "" ""
 
     spin &
@@ -324,7 +325,7 @@ install_docker() {
 
     OUTF=$(/bin/mktemp) || { echo "Failed to create temp file"; exit 1; }
 
-    /usr/bin/curl -fsSL https://get.docker.com | sh &>"${OUTF}"
+    /usr/bin/curl -fsSL https://get.docker.com | CHANNEL=stable sh &>"${OUTF}"
 
     /bin/kill -9 $SPIN_PID
     trap - SIGHUP SIGINT SIGQUIT SIGILL SIGTRAP SIGABRT SIGBUS SIGFPE SIGUSR1 SIGSEGV SIGUSR2 SIGPIPE SIGALRM SIGTERM
