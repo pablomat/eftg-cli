@@ -90,7 +90,7 @@ spin() {
         for X in 0 1 2 3 4 5 6 7
         do
             echo -n "${spinner:${X}:1}"
-            echo -en "\010"
+            echo -en "\\010"
             sleep 1
         done
     done
@@ -153,27 +153,27 @@ getinfo() {
 }
 
 initwit() {
-    printf "%s\n" "A new configuration will be initialized for a witness node"
+    printf "%s\\n" "A new configuration will be initialized for a witness node"
     read -r -p "Are you sure you want to proceed? (yes/no) " yn
     case ${yn} in [Yy]* ) [[ -f "${DATADIR}/witness/config.ini" ]] && { sudo rm "${DATADIR}/witness/config.ini"; } ;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
     getkeys
-    if [[ -f "${DATADIR}/witness/config.ini.example" ]]; then { cp "${DATADIR}/witness/config.ini.example" "${DATADIR}/witness/config.ini"; } else { printf "%s\n" "Error. ${DATADIR}/witness/config.ini.example doesn't exist"; exit 1; } fi
-    [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
+    if [[ -f "${DATADIR}/witness/config.ini.example" ]]; then { cp "${DATADIR}/witness/config.ini.example" "${DATADIR}/witness/config.ini"; } else { printf "%s\\n" "Error. ${DATADIR}/witness/config.ini.example doesn't exist"; exit 1; } fi
+    [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
     witness="$(/usr/bin/jq -r '.name' "${DIR}/.credentials.json")"
     owner_privkey="$(/usr/bin/jq -r '.owner[] | select(.type == "private") | .value' "${DIR}/.credentials.json")"
     /bin/sed -i -e s"/^#witness.*/witness = \"${witness}\"/"g -e s"/^#private-key.*/private-key = ${owner_privkey}/"g "${DATADIR}/witness/config.ini"
-    printf "%s\n" "Configuration updated."
+    printf "%s\\n" "Configuration updated."
     read -r -p "Do you want to keep a copy of your credentials in ${DIR}/.credentials.json ? (yes/no) " yn
     case ${yn} in [Yy]* ) return;; [Nn]* ) rm "${DIR}/.credentials.json" ;; * ) echo "Please answer yes or no.";; esac
 }
 
 updatewit() {
-    printf "%s\n" "The properties of the witness account will be updated and broadcasted to the network"
+    printf "%s\\n" "The properties of the witness account will be updated and broadcasted to the network"
     read -r -p "Are you sure you want to proceed? (yes/no) " yn
     case ${yn} in [Yy]* ) ;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
     if [[ ! -s "${DIR}/.credentials.json" ]]; then
 	    getkeys
-	    [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
+	    [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
     fi
     user="$(/usr/bin/jq -r '.name' "${DIR}/.credentials.json")"
     owner_pubkey="$(/usr/bin/jq -r '.owner[] | select(.type == "public") | .value' "${DIR}/.credentials.json")"
@@ -182,12 +182,12 @@ updatewit() {
 }
 
 disablewit() {
-    printf "%s\n" "This operation will disable your witness"
+    printf "%s\\n" "This operation will disable your witness"
     read -r -p "Are you sure you want to proceed? (yes/no) " yn
     case ${yn} in [Yy]* ) ;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
     if [[ ! -s "${DIR}/.credentials.json" ]]; then
 	    getkeys
-	    [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
+	    [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
     fi
     user="$(/usr/bin/jq -r '.name' "${DIR}/.credentials.json")"
     active_privkey="$(/usr/bin/jq -r '.active[] | select(.type == "private") | .value' "${DIR}/.credentials.json")"
@@ -195,12 +195,12 @@ disablewit() {
 }
 
 updatefeed() {
-    printf "%s\n" "This operation will publish a new feed base price for your witness"
+    printf "%s\\n" "This operation will publish a new feed base price for your witness"
     read -r -p "Are you sure you want to proceed? (yes/no) " yn
     case ${yn} in [Yy]* ) ;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
     if [[ ! -s "${DIR}/.credentials.json" ]]; then
 	    getkeys
-	    [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
+	    [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
     fi
     read -r -p "Do you want to publish the standard feed price of 4.700 EUR for 1.000 EFTG? (yes/no) " yn
     case ${yn} in
@@ -215,7 +215,7 @@ updatefeed() {
 }
 
 chgpass() {
-    printf "%s\n" "This operation will change the password of your EFTG account"
+    printf "%s\\n" "This operation will change the password of your EFTG account"
     read -r -p "Would you like to keep a copy of your new credentials in ${DIR}/.credentials.json ? (yes/no) " yn
     case ${yn} in
         [Yy]* )
@@ -298,7 +298,7 @@ setup() {
     hash docker 2>/dev/null || { echo "${RED}Docker is required for this script to work, proceeding to installation.${RESET}"; install_docker; }
 
     if [[ -f /usr/local/bin/eftg-cli.sh && -f /etc/bash_completion.d/eftg-completion.bash ]]; then
-        printf "\n%s" "${BLUE}Proceeding with eftg-cli environment setup.${RESET}" "${BLUE}===========================================${RESET}" "" ""
+        printf "\\n%s" "${BLUE}Proceeding with eftg-cli environment setup.${RESET}" "${BLUE}===========================================${RESET}" "" ""
         while true; do
             read -r -p "It looks like this setup was already executed, would you like to re-run it ? (yes/no) " yn
             case $yn in
@@ -308,14 +308,14 @@ setup() {
             esac
         done
     else
-        printf "\n%s" "${BLUE}Proceeding with eftg-cli environment setup.${RESET}" "${BLUE}===========================================${RESET}" "" ""
+        printf "\\n%s" "${BLUE}Proceeding with eftg-cli environment setup.${RESET}" "${BLUE}===========================================${RESET}" "" ""
         do_it
     fi
 }
 
 install_docker() {
     install_dependencies
-    printf "\n%s" "${BLUE}Proceeding with docker installation.${RESET}" "${BLUE}====================================${RESET}" "" ""
+    printf "\\n%s" "${BLUE}Proceeding with docker installation.${RESET}" "${BLUE}====================================${RESET}" "" ""
 
     spin &
     SPIN_PID=$!
@@ -342,7 +342,7 @@ install_docker() {
             let COUNTER=COUNTER+1
         done
         #my_line="$(printf '=%.0s' $(/usr/bin/seq 1 ${#my_text}))"
-        printf "\n%s" "${BLUE}${my_text}${RESET}" "${BLUE}${my_line}${RESET}" "" ""
+        printf "\\n%s" "${BLUE}${my_text}${RESET}" "${BLUE}${my_line}${RESET}" "" ""
         if ! /usr/bin/sudo usermod -aG docker "$(whoami)"; then { echo "Unable to add user $(whoami) into group docker"; exit 1; } fi
         echo "IMPORTANT: In order for docker to function correctly, please re-login (or close and re-connect SSH) if connected remotely or reboot."
         echo "After login, please verify that your user $(whoami) is part of the docker group with the command \"id -a\""
@@ -383,7 +383,7 @@ install_dependencies() {
         fi
     done
 
-    printf "\n%s" "${BLUE}Checking software dependencies.${RESET}" "${BLUE}===============================${RESET}" "" ""
+    printf "\\n%s" "${BLUE}Checking software dependencies.${RESET}" "${BLUE}===============================${RESET}" "" ""
 
     if [[ ${#count[@]} -ne 0 ]]; then
         echo "In order to run eftg-cli, the following packages need to be installed : ${count[*]}"
@@ -401,7 +401,7 @@ install_dependencies() {
                     sudo apt -qq update &>/dev/null;
                     sudo apt-get install -y -o Dpkg::Progress-Fancy="1" "${count[@]}" -qq;
                     if ! check_beem; then
-                        if ! install_beem; then { printf "%s\n" "${RED}Unable to install beem, please report this error - $(date)${RESET}"; } fi
+                        if ! install_beem; then { printf "%s\\n" "${RED}Unable to install beem, please report this error - $(date)${RESET}"; } fi
                     fi
                     break;;
                 [Nn]* ) exit;;
@@ -410,9 +410,9 @@ install_dependencies() {
         done
         else
         if ! check_beem; then
-            if ! install_beem; then { printf "%s\n" "${RED}Unable to install beem, please report this error - $(date)${RESET}"; } fi
+            if ! install_beem; then { printf "%s\\n" "${RED}Unable to install beem, please report this error - $(date)${RESET}"; } fi
         else
-            printf "%s\n" "${GREEN}All pre-requisites are already installed${RESET}";
+            printf "%s\\n" "${GREEN}All pre-requisites are already installed${RESET}";
         fi
     fi
     set -u
@@ -422,8 +422,8 @@ installme() {
     if (( $# == 1 )); then
         DK_TAG="${1}"
     fi
-    if ! RAW_OUT="$(/usr/bin/curl -s --max-time 10 "${BADGER_API}${DK_TAG%:*}")"; then { printf "%s\n" "Error quering ${BADGER_API}, please report this issue - $(date)"; printf "%s\n" "Continuing .."; } fi
-    if ! IMG_VER="$(/usr/bin/jq -re '.LatestVersion' <<< "${RAW_OUT}")"; then { printf "%s\n" "Error retrieving latest version from ${BADGER_API} output, please report this issue - $(date)"; IMG_VER=""; printf "%s\n" "Continuing .."; } fi
+    if ! RAW_OUT="$(/usr/bin/curl -s --max-time 10 "${BADGER_API}${DK_TAG%:*}")"; then { printf "%s\\n" "Error quering ${BADGER_API}, please report this issue - $(date)"; printf "%s\\n" "Continuing .."; } fi
+    if ! IMG_VER="$(/usr/bin/jq -re '.LatestVersion' <<< "${RAW_OUT}")"; then { printf "%s\\n" "Error retrieving latest version from ${BADGER_API} output, please report this issue - $(date)"; IMG_VER=""; printf "%s\\n" "Continuing .."; } fi
     if ! [[ -z "${IMG_VER}" ]]; then { echo "${BLUE}NOTE: You are installing image ${DK_TAG} ${IMG_VER} - please make sure this is correct.${RESET}"; } fi
     sleep 2
     docker pull "${DK_TAG}" 
