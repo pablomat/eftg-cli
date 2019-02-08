@@ -5,10 +5,32 @@ set -o errexit # exit on errors
 set -o nounset # exit on use of uninitialized variable
 set -o errtrace # inherits trap on ERR in function and subshell
 
-#RED="$(tput setaf 1)"
+RED="$(tput setaf 1)"
 GREEN="$(tput setaf 2)"
 BLUE="$(tput setaf 4)"
 RESET="$(tput sgr0)"
+BEEM_VER="0.20.18"
+
+check_beem() {
+    local beem_installed="True"
+    if ! pip3 show beem &>/dev/null; then 
+        beem_installed="False"
+    else
+        if ! version="$(python3 -c 'from beem.version import version; print(version)' 2>/dev/null)"; then
+            beem_installed="False"
+        else
+            if [[ x"${version}" != "x${BEEM_VER}" ]]; then
+                beem_installed="False"
+            fi
+        fi
+    fi
+    if [[ x"${beem_installed}" == "xTrue" ]]; then { return 0; } else { return 1; } fi
+}
+
+install_beem() {
+    if pip3 -q install -U beem=="${BEEM_VER}"; then { return 0; } else { return 1; } fi
+}
+
 
 install_dependencies() {
     set +u
@@ -61,14 +83,20 @@ install_dependencies() {
                     fi
                     sudo apt -qq update &>/dev/null;
                     sudo apt-get install -y -o Dpkg::Progress-Fancy="1" "${count[@]}" -qq;
-                    if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.18; } fi;
+                    if ! check_beem; then 
+                        if ! install_beem; then { printf "%s\n" "${RED}Unable to install beem, please report this error - $(date)${RESET}"; } fi 
+                    fi
                     break;;
                 [Nn]* ) exit;;
                 * ) echo "Please answer yes or no.";;
             esac
         done
 	else
-	    if ! pip3 show beem &>/dev/null; then { pip3 -q install -U beem==0.20.18; } else { printf "%s\n" "${GREEN}All pre-requisites are already installed${RESET}"; } fi
+        if ! check_beem; then 
+            if ! install_beem; then { printf "%s\n" "${RED}Unable to install beem, please report this error - $(date)${RESET}"; } fi 
+        else
+            printf "%s\n" "${GREEN}All pre-requisites are already installed${RESET}";
+        fi
     fi
     set -u
 }
