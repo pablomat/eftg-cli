@@ -33,6 +33,7 @@ RESET="$(tput sgr0)"
 : "${REMOTE_WS="wss://kapteyn.westeurope.cloudapp.azure.com:8089"}"
 LOGOPT=("--log-opt" "max-size=100m" "--log-opt" "max-file=50")
 PORTS="2001,8090"
+BADGER_API="https://api.microbadger.com/v1/images/"
 RPC_NODE="https://api.eftg.eu"
 BEEM_VER="0.20.18"
 
@@ -384,7 +385,9 @@ installme() {
     if (( $# == 1 )); then
         DK_TAG="${1}"
     fi
-    echo "${BLUE}NOTE: You are installing image ${DK_TAG}. Please make sure this is correct.${RESET}"
+    if ! RAW_OUT="$(/usr/bin/curl -s --max-time 10 "${BADGER_API}${DK_TAG%:*}")"; then { printf "%s\n" "Error quering ${BADGER_API}, please report this issue - $(date)"; printf "%s\n" "Continuing .."; } fi
+    if ! IMG_VER="$(/usr/bin/jq -re '.LatestVersion' <<< "${RAW_OUT}")"; then { printf "%s\n" "Error retrieving latest version from ${BADGER_API} output, please report this issue - $(date)"; IMG_VER=""; printf "%s\n" "Continuing .."; } fi
+    if ! [[ -z "${IMG_VER}" ]]; then { echo "${BLUE}NOTE: You are installing image ${DK_TAG} ${IMG_VER} - please make sure this is correct.${RESET}"; } fi
     sleep 2
     docker pull "${DK_TAG}" 
     echo "Tagging as eftg_img"
