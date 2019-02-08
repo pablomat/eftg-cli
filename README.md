@@ -17,24 +17,28 @@ Features:
  - Quick access to common actions such as start, stop, local wallet, remote wallet, and much more
 
 ```shell
-Usage: /usr/local/bin/eftg-cli.sh COMMAND [DATA]
+Usage: ./eftg-cli.sh COMMAND [DATA]
 
 Commands:
-    setup - initializes script with all requirements
-    install_docker - install docker
     install_dependencies - install dependencies (Python3 / PIP3 / JQ)
+    install_docker - install docker
+    setup - initializes script with all requirements
     install - pulls latest docker image from server (no compiling)
+    dlblocks - download the blockchain to speed up your first start
+    replay - starts EFTG container (in replay mode)
     start - starts EFTG container
     stop - stops EFTG container
     status - show status of EFTG container
     restart - restarts EFTG container
     witness - witness node setup
     disable_witness - disable a witness
+    enable_witness - re-enable a witness
     publish_feed - publish a new feed base price as a witness
     wallet - open cli_wallet in the container
     remote_wallet - open cli_wallet in the container connecting to a remote seed
     enter - enter a bash session in the container
     logs - show all logs inc. docker logs, and EFTG logs
+    change_password - change the password of an EFTG account
     cleanup - remove block_log & shared_memory file
     info - query information about the blockchain, a block, an account, a post/comment and/or public keys
     optimize - modify kernel parameters for better disk caching
