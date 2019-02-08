@@ -30,7 +30,8 @@ BLUE="$(tput setaf 4)"
 RESET="$(tput sgr0)"
 : "${DK_TAG="eftg/main:latest"}"
 #SHM_DIR=/dev/shm
-: "${REMOTE_WS="wss://kapteyn.westeurope.cloudapp.azure.com:8089"}"
+: "${REMOTE_WS="ws://kapteyn.westeurope.cloudapp.azure.com:8089"}"
+EFTG_DEF="/usr/local/eftgd-default/bin"
 LOGOPT=("--log-opt" "max-size=100m" "--log-opt" "max-file=50")
 PORTS="2001,8090"
 BADGER_API="https://api.microbadger.com/v1/images/"
@@ -50,7 +51,8 @@ help() {
     echo
     echo "Commands: "
     echo "    setup - initializes script with all requirements"
-    #echo "    dlblocks - download the blockchain to speed up your first start"
+    echo "    dlblocks - download the blockchain to speed up your first start"
+    echo "    replay - starts EFTG container (in replay mode)"
     echo "    install_docker - install docker"
     echo "    install_dependencies - install dependencies (Python3 / PIP3 / JQ)"
     echo "    install - pulls latest docker image from server (no compiling)"
@@ -127,7 +129,7 @@ dlblocks() {
     echo "Verifying MD5 checksum... this may take a while..."
     cd "${DATADIR}/witness/blockchain" ; md5sum -c MD5SUM ; cd -
     echo "${GREEN}FINISHED. Blockchain downloaded and verified${RESET}"
-    echo "$ ./eftg-cli.sh replay"
+    echo "$ eftg-cli.sh replay"
 }
 
 getkeys() {
@@ -448,12 +450,28 @@ seed_running() {
     fi
 }
 
+replay() {
+    if seed_running; then
+        echo "${RED}WARNING: Your ($DOCKER_NAME) container is currently running${RESET}"
+        read -r -p "Do you want to stop the container and replay the blockchain? (y/n) > " shouldstop
+        if [[ "$shouldstop" == "y" ]]; then
+                stop
+        else
+                echo "${GREEN}Did not say 'y'. Quitting.${RESET}"
+                return
+        fi
+    fi
+    echo "Running container & replay..."
+    docker run -u "$(id -u)" "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img "${EFTG_DEF}"/steemd -d /eftg/witness --replay-blockchain
+    echo "Started."
+}
+
 start() {
     echo "${GREEN}Starting container...${RESET}"
     if seed_exists; then
         docker start $DOCKER_NAME
     else
-        docker run "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img /usr/local/eftgd-default/bin/steemd -d /eftg/witness
+        docker run -u "$(id -u)" "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img "${EFTG_DEF}"/steemd -d /eftg/witness
     fi
 }
 
@@ -469,14 +487,14 @@ enter() {
 }
 
 wallet() {
-    docker exec -it ${DOCKER_NAME} /usr/local/eftgd-default/bin/cli_wallet -s ws://127.0.0.1:8090 -w /eftg/wallet.json
+    docker exec -it ${DOCKER_NAME} "${EFTG_DEF}"/cli_wallet -s ws://127.0.0.1:8090 -w /eftg/wallet.json
 }
 
 remote_wallet() {
     if (( $# == 1 )); then
 	REMOTE_WS=$1
     fi
-    docker run -v "${DATADIR}":/eftg --rm -it eftg_img /usr/local/eftgd-default/bin/cli_wallet -s "$REMOTE_WS" -w /eftg/wallet.json
+    docker run -u "$(id -u)" -v "${DATADIR}":/eftg --rm -it eftg_img "${EFTG_DEF}"/cli_wallet -s "$REMOTE_WS" -w /eftg/wallet.json
 }
 
 logs() {
@@ -542,6 +560,9 @@ case $1 in
         ;;
     start)
         start
+        ;;
+    replay)
+        replay
         ;;
     stop)
         stop
