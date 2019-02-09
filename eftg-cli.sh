@@ -328,7 +328,7 @@ install_docker() {
     /bin/kill -9 $SPIN_PID
     trap - SIGHUP SIGINT SIGQUIT SIGILL SIGTRAP SIGABRT SIGBUS SIGFPE SIGUSR1 SIGSEGV SIGUSR2 SIGPIPE SIGALRM SIGTERM
 
-    /bin/grep -Ev "^\+|^Warning|^WARNING|^If you|^adding your|^Remember that|^.*sudo|^.*containers|^.*docker host.|^.*Refer to|^.*for more" "${OUTF}" | /bin/sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba'
+    /bin/grep -Ev "^\\+|^Warning|^WARNING|^If you|^adding your|^Remember that|^.*sudo|^.*containers|^.*docker host.|^.*Refer to|^.*for more" "${OUTF}" | /bin/sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba'
 
     if ! /bin/rm "${OUTF}"; then { echo "Cannot remove temp file ${OUTF}"; exit 1; } fi
 
@@ -338,7 +338,7 @@ install_docker() {
         my_line="="
         while [[ ${COUNTER} -lt "${#my_text}" ]]; do
             my_line="${my_line}="
-            let COUNTER=COUNTER+1
+            (( COUNTER++ ))
         done
         #my_line="$(printf '=%.0s' $(/usr/bin/seq 1 ${#my_text}))"
         printf "\\n%s" "${BLUE}${my_text}${RESET}" "${BLUE}${my_line}${RESET}" "" ""
