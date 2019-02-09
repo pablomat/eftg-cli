@@ -462,6 +462,7 @@ replay() {
                 return
         fi
     fi
+    if [[ ! -s "${DATADIR}/witness/blockchain/block_log" ]]; then { printf "%s\\n" "${RED}ERROR: There's no ledger available to replay.${RESET}" "$ eftg-cli.sh dlblocks"; return 1; } fi
     echo "Running container & replay..."
     docker run -u "$(id -u)" "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img "${EFTG_DEF}"/steemd -d /eftg/witness --replay-blockchain
     echo "Started."
