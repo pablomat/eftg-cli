@@ -136,7 +136,7 @@ getkeys() {
     read -r -p "Please enter your EFTG account name (without the @): " user
     read -r -p "Please enter your EFTG master password: " pass
     [[ -f "${DIR}/.credentials.json" ]] && { rm "${DIR}/.credentials.json"; }
-    "${DIR}/scripts/python/get_user_keys.py" "${user}" "${pass}" > "${DIR}/.credentials.json" 
+    "${DIR}/scripts/python/get_user_keys.py" "${user}" "${pass}" > "${DIR}/.credentials.json"
 }
 
 getinfo() {
@@ -172,8 +172,8 @@ updatewit() {
     read -r -p "Are you sure you want to proceed? (yes/no) " yn
     case ${yn} in [Yy]* ) ;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
     if [[ ! -s "${DIR}/.credentials.json" ]]; then
-	    getkeys
-	    [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
+        getkeys
+        [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
     fi
     user="$(/usr/bin/jq -r '.name' "${DIR}/.credentials.json")"
     owner_pubkey="$(/usr/bin/jq -r '.owner[] | select(.type == "public") | .value' "${DIR}/.credentials.json")"
@@ -186,8 +186,8 @@ disablewit() {
     read -r -p "Are you sure you want to proceed? (yes/no) " yn
     case ${yn} in [Yy]* ) ;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
     if [[ ! -s "${DIR}/.credentials.json" ]]; then
-	    getkeys
-	    [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
+        getkeys
+        [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
     fi
     user="$(/usr/bin/jq -r '.name' "${DIR}/.credentials.json")"
     active_privkey="$(/usr/bin/jq -r '.active[] | select(.type == "private") | .value' "${DIR}/.credentials.json")"
@@ -199,19 +199,18 @@ updatefeed() {
     read -r -p "Are you sure you want to proceed? (yes/no) " yn
     case ${yn} in [Yy]* ) ;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
     if [[ ! -s "${DIR}/.credentials.json" ]]; then
-	    getkeys
-	    [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
+        getkeys
+        [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
     fi
-    read -r -p "Do you want to publish the standard feed price of 4.700 EUR for 1.000 EFTG? (yes/no) " yn
+    read -r -p "Do you want to publish the standard feed price of 0.100 EUR for 1.000 EFTG? (yes/no) " yn
     case ${yn} in
-        [Yy]* ) my_feed="4.700" ;; 
-	[Nn]* ) read -r -p "What feed price would you like to publish ? (Provide a value with three decimals without the EUR symbol, e.g.: 4.700) : " my_feed ;;
-	* ) echo "Please answer yes or no.";;
+        [Yy]* ) my_feed="0.100" ;;
+        [Nn]* ) read -r -p "What feed price would you like to publish ? (Provide a value with three decimals without the EUR symbol, e.g.: 4.700) : " my_feed ;;
+        * ) echo "Please answer yes or no.";;
     esac
     user="$(/usr/bin/jq -r '.name' "${DIR}/.credentials.json")"
     active_privkey="$(/usr/bin/jq -r '.active[] | select(.type == "private") | .value' "${DIR}/.credentials.json")"
     "${DIR}/scripts/python/pricefeed_update.py" "${user}" "${active_privkey}" "${my_feed}"
-
 }
 
 chgpass() {
@@ -220,7 +219,7 @@ chgpass() {
     case ${yn} in
         [Yy]* )
             read -r -p "Please enter your EFTG account name (without the @): " user
-            "${DIR}/scripts/python/change_password.py" "${user}" --store-credentials "${DIR}/.credentials.json" 
+            "${DIR}/scripts/python/change_password.py" "${user}" --store-credentials "${DIR}/.credentials.json"
             ;;
         [Nn]* )
             read -r -p "Please enter your EFTG account name (without the @): " user
@@ -280,7 +279,6 @@ cleanup() {
             fi
         fi
     fi
-
 }
 
 setup() {
@@ -334,7 +332,7 @@ install_docker() {
 
     if ! /bin/rm "${OUTF}"; then { echo "Cannot remove temp file ${OUTF}"; exit 1; } fi
 
-    if [ "${EUID}" -ne 0 ]; then 
+    if [ "${EUID}" -ne 0 ]; then
         my_text="Adding user $(whoami) to docker group."
         COUNTER=1
         my_line="="
@@ -427,7 +425,7 @@ installme() {
     if ! IMG_VER="$(/usr/bin/jq -re '.LatestVersion' <<< "${RAW_OUT}")"; then { printf "%s\\n" "Error retrieving latest version from ${BADGER_API} output, please report this issue - $(date)"; IMG_VER=""; printf "%s\\n" "Continuing .."; } fi
     if ! [[ -z "${IMG_VER}" ]]; then { echo "${BLUE}NOTE: You are installing image ${DK_TAG} ${IMG_VER} - please make sure this is correct.${RESET}"; } fi
     sleep 2
-    docker pull "${DK_TAG}" 
+    docker pull "${DK_TAG}"
     echo "Tagging as eftg_img"
     docker tag "${DK_TAG}" eftg_img
     echo "Installation completed. You may now configure or run the server"
@@ -505,7 +503,7 @@ logs() {
 }
 
 status() {
-    
+
     if seed_exists; then
         echo "Container exists?: ${GREEN}YES${RESET}"
     else
@@ -521,7 +519,6 @@ status() {
         echo "Container isn't running. Start it with '$0 start' or '$0 replay'${RESET}"
         return
     fi
-
 }
 
 if [[ ! -f "${DATADIR}/witness/config.ini" ]]; then
