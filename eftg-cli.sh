@@ -202,10 +202,10 @@ updatefeed() {
         getkeys
         [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
     fi
-    read -r -p "Do you want to publish the standard feed price of 5.000 EUR for 1.000 EFTG? (yes/no) " yn
+    read -r -p "Do you want to publish the standard feed price of 1.000 EUR for 1.000 EFTG? (yes/no) " yn
     case ${yn} in
-        [Yy]* ) my_feed="5.000" ;;
-        [Nn]* ) read -r -p "What feed price would you like to publish ? (Provide a value with three decimals without the EUR symbol, e.g.: 4.700) : " my_feed ;;
+        [Yy]* ) my_feed="1.000" ;;
+        [Nn]* ) read -r -p "What feed price would you like to publish ? (Provide a value with three decimals without the EUR symbol, e.g.: 1.000) : " my_feed ;;
         * ) echo "Please answer yes or no.";;
     esac
     user="$(/usr/bin/jq -r '.name' "${DIR}/.credentials.json")"
