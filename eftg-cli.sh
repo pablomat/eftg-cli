@@ -22,7 +22,7 @@ set -o errtrace # inherits trap on ERR in function and subshell
 
 DIR="$( cd "$( realpath "${BASH_SOURCE[0]}" | xargs dirname )" && pwd )"
 DATADIR="$DIR/data"
-DOCKER_NAME="eftg"
+DOCKER_NAME="eftg-dev"
 
 RED="$(tput setaf 1)"
 GREEN="$(tput setaf 2)"
