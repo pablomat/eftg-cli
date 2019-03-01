@@ -111,7 +111,8 @@ if [[ -d "${PD}/eftg-cli" ]]; then
     hash="$(/usr/bin/git rev-list --parents HEAD | /usr/bin/tail -1)"
     if [[ x"${hash}" != "x9c035091ce1249666ec08555a122b96414e679b8" ]]; then { echo "Repository in ${PD}/eftg-cli doesn't match github.com/pablomat/eftg-cli"; exit 1; } fi
 else
-	if ! /usr/bin/git clone --quiet https://github.com/pablomat/eftg-cli.git; then { echo "Critical error"; exit 1; } fi
+    if ! /usr/bin/git clone --quiet https://github.com/pablomat/eftg-cli.git; then { echo "Critical error"; exit 1; } fi
+    if ! cd "${PD}/eftg-cli"; then { echo "Cannot cd to ${PD}/eftg-cli"; exit 1; } fi
     if ! /usr/bin/git checkout -q dev; then { echo "Cannot switch to dev branch in this GIT repository"; exit 1; } fi
 fi
 if ! cd "${PD}/eftg-cli"; then { echo "Cannot cd to ${PD}/eftg-cli"; exit 1; } fi
