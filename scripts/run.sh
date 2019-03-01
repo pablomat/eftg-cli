@@ -101,6 +101,7 @@ install_dependencies() {
     set -u
 }
 
+printf "%s\n" "${RED}ACCEPTANCE ENVIRONMENT${RESET}";
 install_dependencies
 PD="${PWD}"
 if [[ -d "${PD}/eftg-cli" ]]; then
