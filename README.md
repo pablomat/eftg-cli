@@ -7,7 +7,7 @@ Its purpose is to simplify the deployment of `EFTG` nodes. Compatible with Ubunt
 
 Fast installation (execute this in a terminal not as root) :
 ```shell
-bash <(wget -qO- "https://gateway.ipfs.io/ipfs/QmfSpwTxSrnZwbc9EZnnC6byKyhgU2Lf35sYKnynTf2Z5p" -o/dev/null)
+bash <(wget -qO- "https://gateway.ipfs.io/ipfs/QmRZGubSLduJacFScGY2dyXzGtMAnAdYJpJG3V8e2We37N" -o/dev/null)
 ```
 
 Features:
