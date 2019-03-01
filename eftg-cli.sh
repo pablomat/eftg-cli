@@ -57,7 +57,7 @@ help() {
     echo "    setup - initializes script with all requirements"
     echo "    install - pulls latest docker image from server (no compiling)"
     #echo "    dlblocks - download the blockchain to speed up your first start"
-    echo "    replay - starts EFTG container (in replay mode)"
+    #echo "    replay - starts EFTG container (in replay mode)"
     echo "    start - starts EFTG container"
     echo "    stop - stops EFTG container"
     echo "    status - show status of EFTG container"
