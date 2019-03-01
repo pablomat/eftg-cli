@@ -56,7 +56,7 @@ help() {
     echo "    install_docker - install docker"
     echo "    setup - initializes script with all requirements"
     echo "    install - pulls latest docker image from server (no compiling)"
-    echo "    dlblocks - download the blockchain to speed up your first start"
+    #echo "    dlblocks - download the blockchain to speed up your first start"
     echo "    replay - starts EFTG container (in replay mode)"
     echo "    start - starts EFTG container"
     echo "    stop - stops EFTG container"
@@ -425,7 +425,8 @@ installme() {
     fi
     if ! RAW_OUT="$(/usr/bin/curl -s --max-time 10 "${BADGER_API}${DK_TAG%:*}")"; then { printf "%s\\n" "Error quering ${BADGER_API}, please report this issue - $(date)"; printf "%s\\n" "Continuing .."; } fi
     if ! IMG_VER="$(/usr/bin/jq -re '.LatestVersion' <<< "${RAW_OUT}")"; then { printf "%s\\n" "Error retrieving latest version from ${BADGER_API} output, please report this issue - $(date)"; IMG_VER=""; printf "%s\\n" "Continuing .."; } fi
-    if ! [[ -z "${IMG_VER}" ]]; then { echo "${BLUE}NOTE: You are installing image ${DK_TAG} ${IMG_VER} - please make sure this is correct.${RESET}"; } fi
+    #if ! [[ -z "${IMG_VER}" ]]; then { echo "${BLUE}NOTE: You are installing image ${DK_TAG} ${IMG_VER} - please make sure this is correct.${RESET}"; } fi
+    if ! [[ -z "${IMG_VER}" ]]; then { echo "${BLUE}NOTE: You are installing image ${DK_TAG} - please make sure this is correct.${RESET}"; } fi
     sleep 2
     docker pull "${DK_TAG}"
     echo "Tagging as eftg_img"
