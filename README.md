@@ -1,4 +1,5 @@
 # eftg-cli
+# DEV BRANCH INSTRUCTIONS - EFTG TESTNET
 
 **eftg-cli** is a toolkit for using the EFTG [docker images](https://hub.docker.com/r/eftg/main/tags/).
 
@@ -6,7 +7,7 @@ Its purpose is to simplify the deployment of `EFTG` nodes. Compatible with Ubunt
 
 Fast installation (execute this in a terminal not as root) :
 ```shell
-bash <(wget -qO- "https://gateway.ipfs.io/ipfs/Qmcm29pmmsq4GWeNowQo915ap2TaFnCWtuorrcYDgz9dEk" -o/dev/null)
+bash <(wget -qO- "https://gateway.ipfs.io/ipfs/QmfSpwTxSrnZwbc9EZnnC6byKyhgU2Lf35sYKnynTf2Z5p" -o/dev/null)
 ```
 
 Features:
@@ -50,6 +51,7 @@ sudo apt install git # install git if not available
 sudo add-apt-repository universe # add 'universe' repository to sources if not present
 git clone https://github.com/pablomat/eftg-cli.git
 cd ~/eftg-cli
+git checkout dev #VERY IMPORTANT
 ./eftg-cli.sh install_dependencies
 ./eftg-cli.sh setup
 ```
