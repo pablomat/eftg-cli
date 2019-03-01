@@ -28,14 +28,14 @@ RED="$(tput setaf 1)"
 GREEN="$(tput setaf 2)"
 BLUE="$(tput setaf 4)"
 RESET="$(tput sgr0)"
-: "${DK_TAG="eftg/main:latest"}"
+: "${DK_TAG="eftg/main:acceptance"}"
 #SHM_DIR=/dev/shm
-: "${REMOTE_WS="ws://kapteyn.westeurope.cloudapp.azure.com:8089"}"
+: "${REMOTE_WS="ws://kapteyn.westeurope.cloudapp.azure.com:8086"}"
 EFTG_DEF="/usr/local/eftgd-default/bin"
 LOGOPT=("--log-opt" "max-size=100m" "--log-opt" "max-file=50")
 PORTS="2001,8090"
 BADGER_API="https://api.microbadger.com/v1/images/"
-RPC_NODE="https://api.eftg.eu"
+RPC_NODE="https://api.blkcc.xyz"
 BEEM_VER="0.20.18"
 
 IFS=","
@@ -47,6 +47,8 @@ for i in $PORTS; do
 done
 
 help() {
+    echo "### DEV BRANCH ###"
+    echo
     echo "Usage: $0 COMMAND [DATA]"
     echo
     echo "Commands: "

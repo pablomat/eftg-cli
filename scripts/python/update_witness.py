@@ -7,7 +7,7 @@ from beemgraphenebase.account import PrivateKey, PublicKey
 from argparse import ArgumentParser
 from beem.instance import set_shared_steem_instance
 
-stmf = Steem(node=["https://api.eftg.eu"])
+stmf = Steem(node=["https://api.blkcc.xyz"])
 
 def checkwit(username):
     try:
@@ -123,7 +123,7 @@ elif (args.operation[0] == "disable"):
 else:
     parser.error('Invalid input for argument "operation". ' + args.operation[0] + ' is invalid.' + ' Valid options are update or disable') 
 
-stm = Steem(node=["https://api.eftg.eu"], keys=[args.privateactivekey[0]])
+stm = Steem(node=["https://api.blkcc.xyz"], keys=[args.privateactivekey[0]])
 set_shared_steem_instance(stm)
 
 

@@ -3,7 +3,7 @@ from beem.witness import ListWitnesses
 from beem.instance import set_shared_steem_instance
 
 from beem import Steem
-stm = Steem(node=["https://api.eftg.eu"])
+stm = Steem(node=["https://api.blkcc.xyz"])
 
 set_shared_steem_instance(stm)
 

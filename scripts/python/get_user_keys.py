@@ -6,7 +6,7 @@ from argparse import ArgumentParser
 from beem.instance import set_shared_steem_instance
 import json, sys
 
-stm = Steem(node=["https://api.eftg.eu"])
+stm = Steem(node=["https://api.blkcc.xyz"])
 set_shared_steem_instance(stm)
 prefix = stm.prefix
 
