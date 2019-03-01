@@ -65,7 +65,7 @@ help() {
     echo "    witness - witness node setup"
     echo "    disable_witness - disable a witness"
     echo "    enable_witness - re-enable a witness"
-    echo "    publish_feed - publish a new feed base price as a witness"
+    #echo "    publish_feed - publish a new feed base price as a witness"
     echo "    wallet - open cli_wallet in the container"
     echo "    remote_wallet - open cli_wallet in the container connecting to a remote seed"
     echo "    enter - enter a bash session in the container"
