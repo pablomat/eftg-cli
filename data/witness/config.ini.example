@@ -15,6 +15,8 @@ p2p-seed-node = 23.97.210.36:2001               # kepler.westeurope.cloudapp.azu
 p2p-seed-node = 23.97.135.184:2001              # trappist.westeurope.cloudapp.azure.com
 p2p-seed-node = 65.52.156.67:2001               # ross.westeurope.cloudapp.azure.com
 p2p-seed-node = 137.117.165.158:2001            # centauri.westeurope.cloudapp.azure.com
+p2p-seed-node = 91.227.131.115:2001             # rou-tec1 seed-node (Romania)
+p2p-seed-node = 213.166.32.211:2001             # lux-tec1 seed-node (Luxembourg)
 
 shared-file-size = 2G
 
