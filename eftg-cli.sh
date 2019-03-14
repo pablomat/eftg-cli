@@ -426,7 +426,7 @@ installme() {
     fi
     if ! RAW_OUT="$(/usr/bin/curl -s --max-time 10 "${BADGER_API}${DK_TAG%:*}")"; then { printf "%s\\n" "Error quering ${BADGER_API}, please report this issue - $(date)"; printf "%s\\n" "Continuing .."; } fi
     if ! IMG_VER="$(/usr/bin/jq -re '.LatestVersion' <<< "${RAW_OUT}")"; then { printf "%s\\n" "Error retrieving latest version from ${BADGER_API} output, please report this issue - $(date)"; IMG_VER=""; printf "%s\\n" "Continuing .."; } fi
-    if ! [[ -z "${IMG_VER}" ]]; then { echo "${BLUE}NOTE: You are installing image ${DK_TAG} ${IMG_VER} - please make sure this is correct.${RESET}"; } fi
+    if [[ -n "${IMG_VER}" ]]; then { echo "${BLUE}NOTE: You are installing image ${DK_TAG} ${IMG_VER} - please make sure this is correct.${RESET}"; } fi
     sleep 2
     docker pull "${DK_TAG}"
     echo "Tagging as eftg_img"
