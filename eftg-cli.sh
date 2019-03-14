@@ -6,12 +6,12 @@
 # This script facilitates the operation of an EFTG node
 #
 #
-# Release v0.2
+# Release v0.3
 #
 # Changelog :
 #               v0.1 : First release (2018/10/15) - Adapted from previous code.
 #               v0.2 : Second release (2019/01/11) - Tested with a few witnesses
-#               v0.3 : Third release
+#               v0.3 : Third release (2019/03/14) - Added option for RPC nodes
 #
 #
 #set -xv
@@ -32,8 +32,10 @@ RESET="$(tput sgr0)"
 #SHM_DIR=/dev/shm
 : "${REMOTE_WS="ws://kapteyn.westeurope.cloudapp.azure.com:8089"}"
 EFTG_DEF="/usr/local/eftgd-default/bin"
+EFTG_FULL="/usr/local/eftgd-full/bin"
 LOGOPT=("--log-opt" "max-size=100m" "--log-opt" "max-file=50")
-PORTS="2001,8090"
+DOCKEROPT=("--restart" "always")
+PORTS="2001,8089,8090"
 BADGER_API="https://api.microbadger.com/v1/images/"
 RPC_NODE="https://api.eftg.eu"
 BEEM_VER="0.20.18"
@@ -66,6 +68,7 @@ help() {
     echo "    publish_feed - publish a new feed base price as a witness"
     echo "    wallet - open cli_wallet in the container"
     echo "    remote_wallet - open cli_wallet in the container connecting to a remote seed"
+    echo "    rpcnode - setup and configure an RPC node"
     echo "    enter - enter a bash session in the container"
     echo "    logs - show all logs inc. docker logs, and EFTG logs"
     echo "    change_password - change the password of an EFTG account"
@@ -462,7 +465,24 @@ replay() {
     fi
     if [[ ! -s "${DATADIR}/witness/blockchain/block_log" ]]; then { printf "%s\\n" "${RED}ERROR: There's no ledger available to replay.${RESET}" "$ eftg-cli.sh dlblocks"; return 1; } fi
     echo "Running container & replay..."
-    docker run -u "$(id -u)" "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img "${EFTG_DEF}"/steemd -d /eftg/witness --replay-blockchain
+    docker run -u "$(id -u)" "${DOCKEROPT[@]}" "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img "${EFTG_DEF}"/steemd -d /eftg/witness --replay-blockchain
+    echo "Started."
+}
+
+rpcnode() {
+    if seed_running; then
+        echo "${RED}WARNING: Your ($DOCKER_NAME) container is currently running${RESET}"
+        read -r -p "Do you want to stop the container change the configuration for an RPC Node ? (y/n) > " shouldstop
+        if [[ "$shouldstop" == "y" ]]; then
+                stop
+        else
+                echo "${GREEN}Did not say 'y'. Quitting.${RESET}"
+                return
+        fi
+    fi
+    if ! cp "${DATADIR}/witness/config.rpc.ini.example" "${DATADIR}/witness/config.ini"; then { printf "%s\\n" "${RED}ERROR: Unable to copy RPC config. ${DATADIR}/witness/config.rpc.ini.example doesn't exist.${RESET}"; return 1; } fi
+    echo "Running RPC node container..."
+    docker run -u "$(id -u)" "${DOCKEROPT[@]}" "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img "${EFTG_FULL}"/steemd -d /eftg/witness
     echo "Started."
 }
 
@@ -471,7 +491,7 @@ start() {
     if seed_exists; then
         docker start $DOCKER_NAME
     else
-        docker run -u "$(id -u)" "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img "${EFTG_DEF}"/steemd -d /eftg/witness
+        docker run -u "$(id -u)" "${DOCKEROPT[@]}" "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img "${EFTG_DEF}"/steemd -d /eftg/witness
     fi
 }
 
@@ -586,6 +606,9 @@ case $1 in
         ;;
     remote_wallet)
         remote_wallet "${@:2}"
+        ;;
+    rpcnode)
+        rpcnode
         ;;
     dlblocks)
         dlblocks 
