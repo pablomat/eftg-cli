@@ -131,7 +131,7 @@ dlblocks() {
     /usr/bin/wget --quiet "https://seed.blkcc.xyz/MD5SUM" -O "${DATADIR}/witness/blockchain/MD5SUM"
     echo "Verifying MD5 checksum... this may take a while..."
     cd "${DATADIR}/witness/blockchain" ; md5sum -c MD5SUM ; cd -
-    echo "${GREEN}FINISHED. Blockchain downloaded and verified${RESET}"
+    echo "${GREEN}FINISHED. Blockchain ledger downloaded and verified${RESET}"
     echo "$ eftg-cli.sh replay"
 }
 
@@ -465,7 +465,11 @@ replay() {
     fi
     if [[ ! -s "${DATADIR}/witness/blockchain/block_log" ]]; then { printf "%s\\n" "${RED}ERROR: There's no ledger available to replay.${RESET}" "$ eftg-cli.sh dlblocks"; return 1; } fi
     echo "Running container & replay..."
-    docker run -u "$(id -u)" "${DOCKEROPT[@]}" "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img "${EFTG_DEF}"/steemd -d /eftg/witness --replay-blockchain
+    if [[ $(/usr/bin/diff -q "${DATADIR}/witness/config.ini" "${DATADIR}/witness/config.rpc.ini.example" &>/dev/null) -eq 0 ]]; then
+        docker run -u "$(id -u)" "${DOCKEROPT[@]}" "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img "${EFTG_FULL}"/steemd -d /eftg/witness --replay-blockchain
+    else
+        docker run -u "$(id -u)" "${DOCKEROPT[@]}" "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img "${EFTG_DEF}"/steemd -d /eftg/witness --replay-blockchain
+    fi
     echo "Started."
 }
 
@@ -482,7 +486,12 @@ rpcnode() {
     fi
     if ! cp "${DATADIR}/witness/config.rpc.ini.example" "${DATADIR}/witness/config.ini"; then { printf "%s\\n" "${RED}ERROR: Unable to copy RPC config. ${DATADIR}/witness/config.rpc.ini.example doesn't exist.${RESET}"; return 1; } fi
     echo "Running RPC node container..."
-    docker run -u "$(id -u)" "${DOCKEROPT[@]}" "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img "${EFTG_FULL}"/steemd -d /eftg/witness
+    if [[ -s "${DATADIR}/witness/blockchain/block_log" ]]; then
+        replay
+        #docker run -u "$(id -u)" "${DOCKEROPT[@]}" "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img "${EFTG_FULL}"/steemd -d /eftg/witness --replay-blockchain
+    else
+        docker run -u "$(id -u)" "${DOCKEROPT[@]}" "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img "${EFTG_FULL}"/steemd -d /eftg/witness
+    fi
     echo "Started."
 }
 
