@@ -1,16 +1,16 @@
 # Console appender definition json: {"appender", "stream"}
 log-console-appender = {"appender":"stderr","stream":"std_error"}
-                                                                        
+
 # File appender definition json:  {"appender", "file"}
 log-file-appender = {"appender":"p2p","file":"logs/p2p/p2p.log"}
-                                                                        
+
 # Logger definition json: {"name", "level", "appender"}
 log-logger = {"name":"default","level":"debug","appender":"stderr"}
 log-logger = {"name":"p2p","level":"info","appender":"stderr"}
-                                                                 
+
 webserver-http-endpoint = 0.0.0.0:8090
 webserver-ws-endpoint = 0.0.0.0:8089
-                             
+
 p2p-endpoint = 0.0.0.0:2001
 
 shared-file-size = 20G
@@ -21,6 +21,8 @@ p2p-seed-node = 65.52.156.67:2001               # ross.westeurope.cloudapp.azure
 p2p-seed-node = 137.117.165.158:2001            # centauri.westeurope.cloudapp.azure.com
 p2p-seed-node = 91.227.131.115:2001             # rou-tec1 seed-node (Romania)
 p2p-seed-node = 213.166.32.211:2001             # lux-tec1 seed-node (Luxembourg)
+p2p-seed-node = 217.69.84.152:2001              # deu-tec1 seed-node (Germany)
+p2p-seed-node = 212.122.187.49:2001             # bgr-tec1 seed-node (Bulgaria)
 
 # Plugin(s) to enable, may be specified multiple times
 plugin = chain webserver p2p json_rpc witness account_by_key tags follow market_history account_history
