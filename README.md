@@ -36,6 +36,7 @@ Commands:
     publish_feed - publish a new feed base price as a witness
     wallet - open cli_wallet in the container
     remote_wallet - open cli_wallet in the container connecting to a remote seed
+    rpcnode - setup and configure an RPC node
     enter - enter a bash session in the container
     logs - show all logs inc. docker logs, and EFTG logs
     change_password - change the password of an EFTG account
