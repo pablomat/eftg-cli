@@ -19,6 +19,7 @@ p2p-seed-node = 91.227.131.115:2001             # rou-tec1 seed-node (Romania)
 p2p-seed-node = 213.166.32.211:2001             # lux-tec1 seed-node (Luxembourg)
 p2p-seed-node = 217.69.84.152:2001              # deu-tec1 seed-node (Germany)
 p2p-seed-node = 212.122.187.49:2001             # bgr-tec1 seed-node (Bulgaria)
+p2p-seed-node = 217.61.51.244:2001              # ita-tec1 seed-node (Italy)
 
 shared-file-size = 2G
 
