@@ -28,10 +28,11 @@ RED="$(tput setaf 1)"
 GREEN="$(tput setaf 2)"
 BLUE="$(tput setaf 4)"
 RESET="$(tput sgr0)"
-: "${DK_TAG="eftg/main:acceptance"}"
+if [[ $(uname -m) =~ arm ]]; then { : "${DK_TAG="eftg/main:arm32v7-latest"}" ; } else { : "${DK_TAG="eftg/main:acceptance"}" ; } fi
 #SHM_DIR=/dev/shm
 : "${REMOTE_WS="ws://kapteyn.westeurope.cloudapp.azure.com:8086"}"
-EFTG_DEF="/usr/local/eftgd-default/bin"
+if [[ $(uname -m) =~ arm ]]; then { EFTG_DEF="/usr/local/eftgd-full/bin"; } else { EFTG_DEF="/usr/local/eftgd-default/bin"; } fi
+if [[ $(uname -m) =~ arm ]]; then { EFTG_FULL="/usr/local/eftgd-full/bin"; } else { EFTG_FULL="/usr/local/eftgd-full/bin"; } fi
 LOGOPT=("--log-opt" "max-size=100m" "--log-opt" "max-file=50")
 DOCKEROPT=("--restart" "always")
 PORTS="2002,8089,8090"
@@ -396,7 +397,9 @@ install_dependencies() {
             case $yn in
                 [Yy]* )
                     if [[ -e /etc/apt/sources.list ]]; then
-                        if ! /bin/grep -q universe /etc/apt/sources.list; then { /usr/bin/sudo /usr/bin/add-apt-repository universe &>/dev/null; } fi
+                        if [[ ! $(uname -m) =~ arm ]]; then
+                            if ! /bin/grep -q universe /etc/apt/sources.list; then { /usr/bin/sudo /usr/bin/add-apt-repository universe &>/dev/null; } fi
+                        fi
                     else
                         echo "/etc/apt/sources.list doesn't exist"
                         exit 1
@@ -489,7 +492,6 @@ rpcnode() {
     echo "Running RPC node container..."
     if [[ -s "${DATADIR}/witness/blockchain/block_log" ]]; then
         replay
-        #docker run -u "$(id -u)" "${DOCKEROPT[@]}" "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img "${EFTG_FULL}"/steemd -d /eftg/witness --replay-blockchain
     else
         docker run -u "$(id -u)" "${DOCKEROPT[@]}" "${DPORTS[@]}" -v "${DATADIR}":/eftg "${LOGOPT[@]}" -d --name "${DOCKER_NAME}" -t eftg_img "${EFTG_FULL}"/steemd -d /eftg/witness
     fi
