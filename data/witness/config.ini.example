@@ -9,9 +9,10 @@ log-logger = {"name":"default","level":"info","appender":"stderr"}
 log-logger = {"name":"p2p","level":"info","appender":"stderr"}
 
 webserver-ws-endpoint = 0.0.0.0:8090
-p2p-endpoint = 0.0.0.0:2001
+p2p-endpoint = 0.0.0.0:2002
 
-p2p-seed-node = 40.118.123.96:2002               # kapteyn.westeurope.cloudapp.azure.com (Acceptance Blockchain EFTG)
+p2p-seed-node = 40.118.123.96:2002               # kapteyn.westeurope.cloudapp.azure.com (Acceptance Blockchain)
+p2p-seed-node = 137.117.165.158:2002             # centauri.westeurope.cloudapp.azure.com (Acceptance Blockchain)
 
 shared-file-size = 2G
 
