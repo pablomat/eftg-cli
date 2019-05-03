@@ -1,0 +1,31 @@
+# Console appender definition json: {"appender", "stream"}
+log-console-appender = {"appender":"stderr","stream":"std_error"}
+
+# File appender definition json:  {"appender", "file"}
+log-file-appender = {"appender":"p2p","file":"logs/p2p/p2p.log"}
+
+# Logger definition json: {"name", "level", "appender"}
+log-logger = {"name":"default","level":"debug","appender":"stderr"}
+log-logger = {"name":"p2p","level":"info","appender":"stderr"}
+
+webserver-http-endpoint = 0.0.0.0:8090
+webserver-ws-endpoint = 0.0.0.0:8089
+
+p2p-endpoint = 0.0.0.0:2002
+
+shared-file-size = 20G
+
+p2p-seed-node = 40.118.123.96:2002               # kapteyn.westeurope.cloudapp.azure.com (Acceptance Blockchain)
+p2p-seed-node = 137.117.165.158:2002             # centauri.westeurope.cloudapp.azure.com (Acceptance Blockchain)
+
+# Plugin(s) to enable, may be specified multiple times
+plugin = chain webserver p2p json_rpc witness account_by_key tags follow market_history account_history
+
+plugin = database_api account_by_key_api network_broadcast_api tags_api follow_api market_history_api witness_api condenser_api block_api account_history_api reputation_api
+
+flush-state-interval = 0
+follow-max-feed-size = 500
+market-history-bucket-size = [15,60,300,3600,86400]
+market-history-buckets-per-size = 5760
+p2p-user-agent = Graphene Reference Implementation
+webserver-thread-pool-size = 256
