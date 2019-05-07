@@ -76,7 +76,9 @@ install_dependencies() {
             case $yn in
                 [Yy]* )
                     if [[ -e /etc/apt/sources.list ]]; then
-                        if ! /bin/grep -q universe /etc/apt/sources.list; then { /usr/bin/sudo /usr/bin/add-apt-repository universe &>/dev/null; } fi
+                        if [[ ! $(uname -m) =~ arm ]]; then
+                            if ! /bin/grep -q universe /etc/apt/sources.list; then { /usr/bin/sudo /usr/bin/add-apt-repository universe &>/dev/null; } fi
+                        fi
                     else
                         echo "/etc/apt/sources.list doesn't exist"
                         exit 1
