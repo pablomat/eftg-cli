@@ -28,11 +28,17 @@ RED="$(tput setaf 1)"
 GREEN="$(tput setaf 2)"
 BLUE="$(tput setaf 4)"
 RESET="$(tput sgr0)"
-if [[ $(uname -m) =~ arm ]]; then { : "${DK_TAG="eftg/main:arm32v7-latest"}" ; } else { : "${DK_TAG="eftg/main:acceptance"}" ; } fi
+if [[ "$(uname -m)" == "aarch64" ]]; then
+    : "${DK_TAG="eftg/main:arm64v8-latest"}"
+elif [[ "$(uname -m)" == "armv7l" ]]; then
+    : "${DK_TAG="eftg/main:arm32v7-latest"}"
+else
+    : "${DK_TAG="eftg/main:acceptance"}"
+fi
 #SHM_DIR=/dev/shm
 : "${REMOTE_WS="ws://kapteyn.westeurope.cloudapp.azure.com:8086"}"
-if [[ $(uname -m) =~ arm ]]; then { EFTG_DEF="/usr/local/eftgd-full/bin"; } else { EFTG_DEF="/usr/local/eftgd-default/bin"; } fi
-if [[ $(uname -m) =~ arm ]]; then { EFTG_FULL="/usr/local/eftgd-full/bin"; } else { EFTG_FULL="/usr/local/eftgd-full/bin"; } fi
+if [[ "$(uname -m)" == "armv7l" ]]; then { EFTG_DEF="/usr/local/eftgd-full/bin"; } else { EFTG_DEF="/usr/local/eftgd-default/bin"; } fi
+if [[ "$(uname -m)" == "armv7l" ]]; then { EFTG_FULL="/usr/local/eftgd-full/bin"; } else { EFTG_FULL="/usr/local/eftgd-full/bin"; } fi
 LOGOPT=("--log-opt" "max-size=100m" "--log-opt" "max-file=50")
 DOCKEROPT=("--restart" "always")
 PORTS="2002,8089,8090"
