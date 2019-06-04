@@ -26,6 +26,7 @@ DOCKER_NAME="eftg"
 
 RED="$(tput setaf 1)"
 GREEN="$(tput setaf 2)"
+YELLOW="$(tput setaf 3)"
 BLUE="$(tput setaf 4)"
 RESET="$(tput sgr0)"
 : "${DK_TAG="eftg/main:latest"}"
@@ -171,17 +172,30 @@ initwit() {
 }
 
 updatewit() {
-    printf "%s\\n" "The properties of the witness account will be updated and broadcasted to the network"
-    read -r -p "Are you sure you want to proceed? (yes/no) " yn
-    case ${yn} in [Yy]* ) ;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
-    if [[ ! -s "${DIR}/.credentials.json" ]]; then
-        getkeys
-        [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
+    do_update() {
+        printf "%s\\n" "The properties of the witness account will be updated and broadcasted to the network"
+        read -r -p "Are you sure you want to proceed? (yes/no) " yn
+        case ${yn} in [Yy]* ) ;; [Nn]* ) exit ;; * ) echo "Please answer yes or no.";; esac
+        if [[ ! -s "${DIR}/.credentials.json" ]]; then
+            getkeys
+            [[ ! -s "${DIR}/.credentials.json" ]] && { printf "%s\\n" "Error. ${DIR}/.credentials.json doesn't exist or is empty"; exit 1; }
+        fi
+        user="$(/usr/bin/jq -r '.name' "${DIR}/.credentials.json")"
+        owner_pubkey="$(/usr/bin/jq -r '.owner[] | select(.type == "public") | .value' "${DIR}/.credentials.json")"
+        active_privkey="$(/usr/bin/jq -r '.active[] | select(.type == "private") | .value' "${DIR}/.credentials.json")"
+        "${DIR}/scripts/python/update_witness.py" update "${user}" "${active_privkey}" --publicownerkey "${owner_pubkey}" --blocksize 131072 --url "https://condenser.eftg.eu/@${user}" --creationfee "0.100 EFTG" --interestrate 0
+    }
+    if seed_running; then
+        do_update
+    else
+        if (( $# == 1 )); then
+            if [[ "${1}" == "quiet" ]]; then { do_update ; } fi
+        else
+            printf "\\n%s" "${YELLOW}WARNING, Witness container is not running.${RESET}" ""
+            read -r -p "Are you sure you want to proceed? (yes/no) " yn
+            case ${yn} in [Yy]* ) do_update;; [Nn]* ) exit;; * ) echo "Please answer yes or no.";; esac
+        fi
     fi
-    user="$(/usr/bin/jq -r '.name' "${DIR}/.credentials.json")"
-    owner_pubkey="$(/usr/bin/jq -r '.owner[] | select(.type == "public") | .value' "${DIR}/.credentials.json")"
-    active_privkey="$(/usr/bin/jq -r '.active[] | select(.type == "private") | .value' "${DIR}/.credentials.json")"
-    "${DIR}/scripts/python/update_witness.py" update "${user}" "${active_privkey}" --publicownerkey "${owner_pubkey}" --blocksize 131072 --url "https://condenser.eftg.eu/@${user}" --creationfee "0.100 EFTG" --interestrate 0
 }
 
 disablewit() {
@@ -521,7 +535,7 @@ wallet() {
 
 remote_wallet() {
     if (( $# == 1 )); then
-	REMOTE_WS=$1
+        REMOTE_WS=$1
     fi
     docker run -u "$(id -u)" -v "${DATADIR}":/eftg --rm -it eftg_img "${EFTG_DEF}"/cli_wallet -s "$REMOTE_WS" -w /eftg/wallet.json
 }
@@ -578,7 +592,7 @@ case $1 in
     witness)
         initwit
         echo
-        updatewit
+        updatewit quiet
         ;;
     disable_witness)
         disablewit
