@@ -20,6 +20,11 @@ p2p-seed-node = 213.166.32.211:2001             # lux-tec1 seed-node (Luxembourg
 p2p-seed-node = 217.69.84.152:2001              # deu-tec1 seed-node (Germany)
 p2p-seed-node = 212.122.187.49:2001             # bgr-tec1 seed-node (Bulgaria)
 p2p-seed-node = 217.61.51.244:2001              # ita-tec1 seed-node (Italy)
+p2p-seed-node = 40.66.62.132:2001               # wasp1b seed-node
+p2p-seed-node = 52.142.125.205:2001             # wasp2b seed-node
+p2p-seed-node = 51.105.232.210:2001             # wasp3b seed-node
+p2p-seed-node = 40.66.59.243:2001               # wasp4b seed-node
+p2p-seed-node = 52.142.121.108:2001             # wasp5b seed-node
 
 shared-file-size = 2G
 
