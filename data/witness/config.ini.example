@@ -25,6 +25,23 @@ p2p-seed-node = 52.142.125.205:2001             # wasp2b seed-node
 p2p-seed-node = 51.105.232.210:2001             # wasp3b seed-node
 p2p-seed-node = 40.66.59.243:2001               # wasp4b seed-node
 p2p-seed-node = 52.142.121.108:2001             # wasp5b seed-node
+p2p-seed-node = 51.105.217.249:2001             # wasp6b seed-node
+p2p-seed-node = 20.40.133.89:2001               # wasp7b seed-node
+p2p-seed-node = 52.142.127.219:2001             # wasp8b seed-node
+p2p-seed-node = 51.105.217.250:2001             # wasp8c seed-node
+p2p-seed-node = 20.40.139.70:2001               # wasp10b seed-node
+p2p-seed-node = 52.142.122.102:2001             # wasp11b seed-node
+p2p-seed-node = 51.105.192.0:2001               # wasp12b seed-node
+p2p-seed-node = 40.66.60.51:2001                # wasp13b seed-node
+p2p-seed-node = 52.142.127.82:2001              # wasp14b seed-node
+p2p-seed-node = 51.105.192.47:2001              # wasp15b seed-node
+p2p-seed-node = 20.40.134.80:2001               # wasp16b seed-node
+p2p-seed-node = 52.142.127.126:2001             # wasp17b seed-node
+p2p-seed-node = 51.105.192.170:2001             # wasp18b seed-node
+p2p-seed-node = 20.40.134.81:2001               # wasp19b seed-node
+p2p-seed-node = 52.142.127.139:2001             # wasp20b seed-node
+p2p-seed-node = 51.105.192.189:2001             # wasp21b seed-node
+p2p-seed-node = 20.40.134.82:2001               # wasp22b seed-node
 
 shared-file-size = 2G
 
